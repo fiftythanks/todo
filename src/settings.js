@@ -23,6 +23,7 @@ export const settings = {
   // Provide the function with an amount of tomatoes after which you want the long break to start
   setWhenLongStarts(tomatoes) {
     timer.longInterval = tomatoes;
+    localStorage.longInterval = tomatoes;
   },
 
   toggleAutoSwitchTask() {
@@ -47,6 +48,7 @@ export const settings = {
     } else {
       timer.autoStartTomatoes = false;
     }
+    localStorage.autoStartTomatoes = timer.autoStartTomatoes.toString();
   },
 
   toggleAutoStartBreaks() {
@@ -55,5 +57,6 @@ export const settings = {
     } else {
       timer.autoStartBreaks = false;
     }
+    localStorage.autoStartBreaks = timer.autoStartBreaks.toString();
   },
 };
