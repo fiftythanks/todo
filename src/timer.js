@@ -4,30 +4,95 @@
 
 // If the user set the timer to start breaks and tomatoes automatically, the app should calculate how many tomatoes the user should've completed at the moment he or she returns to the app and arrange everything dependent on this information properly.
 
-// a simple timer
 export const timer = {
-  dur: 45,
-  set duration(value) {
-    this.pause();
-    this.dur = value;
-    this.minutes = value;
-    this.reset();
-  },
-  get duration() {
-    return this.dur;
+  tomatoDur: 45,
+  set tomatoDuration(newTomatoDuration) {
+    this.tomatoDur = newTomatoDuration;
+    if (this.current === "tomato") {
+      let passed = this.duration - this.minutes;
+      if (passed < newTomatoDuration || (passed === newTomatoDuration && this.seconds > 0 )) {
+        this.duration = newTomatoDuration;  
+        this.minutes = newTomatoDuration - passed;
+      } else {
+        this.setCurrent("tomato");
+      }
+    }
   },  
+  get tomatoDuration() {
+    return this.tomatoDur;
+  },
+  
+  shortDuration: 5,
+  longDuration: 15,
+
+  // After how many tomatoes should 
+  // - a long break start after you finish a tomato if the autoSwitchTask === true
+  // - the next break become long if the User doesn't specifically start a short break
+  longInterval: 2,
+
+  autoStartTomatoes: false,
+  autoStartBreaks: false,
+
+  current: "tomato",
+  tomatoesTotal: 0,
+
+  // As soon as the long break starts, the count resets to null
+  tomatoesInCycle: 0,
+
+  duration: 45,
+  curr: "tomato",
+  set current(string) {
+    switch (string) {
+      case "tomato":
+        this.pause();
+        this.duration = this.tomatoDuration;
+        this.curr = "tomato";
+        this.reset();
+        break;
+      case "short":
+        this.pause();
+        this.duration = this.shortDuration;
+        this.curr = "short";
+        this.reset();
+        break;
+      case "long":
+        this.pause();
+        this.duration = this.longDuration;
+        this.curr = "long";
+        this.reset();
+        break;
+      default:
+        console.error('Type in a correct value ("tomato"/"short"/"long").');
+    }
+  }, 
+
+  get current() {
+    return this.curr;
+  },
+  
   paused: true,
-  time: undefined,
+  timer: undefined,
   minutes: 45,
   seconds: 0,
   start() {
     this.paused = false;
-    this.time = setInterval(() => this.update(), 1000);
+    this.timer = setInterval(() => this.update(), 1000);
   },
   update() {
     if (this.minutes === 0 && this.seconds === 0) {
-      clearInterval(this.time);  
-      return "Time's up"; 
+      clearInterval(this.timer);  
+      this.paused = true;
+      if (this.current === "tomato") {
+        this.tomatoesTotal++;
+        this.tomatoesInCycle++;
+        if (this.tomatoesInCycle === this.longInterval) {
+          this.tomatoesInCycle === 0;
+          this.current = "long";
+        }
+      } else if (this.current === "short" || this.current === "long") {
+        this.current = "tomato";
+      }
+      console.log("Time's up"); 
     } else if (!this.paused) {
       if (this.seconds > 0) {
         this.seconds--;
@@ -36,14 +101,17 @@ export const timer = {
         this.minutes--;
         this.seconds = 59;    
         console.log(`${this.minutes}:${this.seconds}`);
-      }
+      } 
     }
   },
   pause() {
-    clearInterval(this.time);
-    this.paused = true;
+    if (this.paused === false) {
+      clearInterval(this.timer);
+      this.paused = true;
+    }
   },
   reset() {
+    this.pause();
     this.minutes = this.duration;
     this.seconds = 0;
   },
