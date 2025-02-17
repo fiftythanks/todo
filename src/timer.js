@@ -117,19 +117,22 @@ export const timer = {
         this.tomatoesTotal++;
         this.tomatoesInCycle++;
         if (this.tomatoesInCycle === this.longInterval) {
-          this.tomatoesInCycle === 0;
+          this.tomatoesInCycle = 0;
           this.current = "long";
         } else {
           this.current = "short";
         }
+        console.log(`It's time for a break. You have ${this.duration} minutes.`); 
+        if (this.autoStartBreaks === true) this.start();
       } else if (this.current === "short" || this.current === "long") {
         this.current = "tomato";
+        console.log("Your break is over. Get to work!"); 
+        if (this.autoStartTomatoes === true) this.start();
       }
-      console.log("Time's up"); 
     } else if (!this.paused) {
       if (this.seconds > 0) {
         this.seconds--;
-        console.log(`${this.minutes}:${this.seconds}`);
+        console.log(`${this.minutes}:${this.seconds}`);   
       } else if (this.seconds === 0) {
         this.minutes--;
         this.seconds = 59;    
