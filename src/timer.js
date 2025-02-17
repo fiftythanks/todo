@@ -11,13 +11,18 @@ export const timer = {
     localStorage.tomatoDuration = newTomatoDuration;
     if (this.current === "tomato") {
       let passed = this.duration - this.minutes;
-      if (passed < newTomatoDuration || (passed === newTomatoDuration && this.seconds > 0)) {
+      if (passed < newTomatoDuration || (passed === newTomatoDuration && this.seconds >= 0)) {
         this.duration = newTomatoDuration;  
         localStorage.duration = newTomatoDuration;
         this.minutes = newTomatoDuration - passed;
         localStorage.minutes = this.minutes;
       } else {
-        this.current = "tomato";
+        // let fullCycle = this.tomatoDuration * this.longInterval + this.shortDuration * (this.longInterval - 1) + this.longDuration;
+        let seconds = this.seconds;
+        do {
+          passed - this.duration;
+          this.finishInterval();
+        } while (this.duration <= passed);
       }
     }
   },  
@@ -122,7 +127,7 @@ export const timer = {
     localStorage.paused = "false";
     this.timer = setInterval(() => this.update(), 1000);
   },
-  
+
   update() {
     if (this.minutes === 0 && this.seconds === 0) {
       this.finishInterval();
@@ -193,7 +198,7 @@ export const timer = {
     localStorage.tomatoesInCycle = "0";
   }
 };
-//
+
 export function initializeTimer() {
   if (!localStorage.tomatoDuration) {
     localStorage.tomatoDuration = timer.tomatoDuration.toString();
