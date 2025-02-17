@@ -104,7 +104,7 @@ export const timer = {
   paused: true,
   timer: undefined,
   minutes: 45,
-  seconds: 0,
+  seconds: 0, 
   start() {
     this.paused = false;
     this.timer = setInterval(() => this.update(), 1000);
@@ -119,6 +119,8 @@ export const timer = {
         if (this.tomatoesInCycle === this.longInterval) {
           this.tomatoesInCycle === 0;
           this.current = "long";
+        } else {
+          this.current = "short";
         }
       } else if (this.current === "short" || this.current === "long") {
         this.current = "tomato";
