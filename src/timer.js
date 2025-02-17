@@ -10,11 +10,11 @@ export const timer = {
     this.tomatoDur = newTomatoDuration;
     if (this.current === "tomato") {
       let passed = this.duration - this.minutes;
-      if (passed < newTomatoDuration || (passed === newTomatoDuration && this.seconds > 0 )) {
+      if (passed < newTomatoDuration || (passed === newTomatoDuration && this.seconds > 0)) {
         this.duration = newTomatoDuration;  
         this.minutes = newTomatoDuration - passed;
       } else {
-        this.setCurrent("tomato");
+        this.current = "tomato";
       }
     }
   },  
@@ -22,8 +22,39 @@ export const timer = {
     return this.tomatoDur;
   },
   
-  shortDuration: 5,
-  longDuration: 15,
+  shortDur: 5,
+  set shortDuration(newShortDuration) {
+    this.shortDur = newShortDuration;
+    if (this.current === "short") {
+      let passed = this.duration - this.minutes;
+      if (passed < newShortDuration || (passed === newShortDuration && this.seconds > 0)) {
+        this.duration = newShortDuration;
+        this.minutes = newShortDuration - passed;
+      } else {
+        this.current = "short";
+      }
+    }
+  },
+  get shortDuration() {
+    return this.shortDur;
+  },
+
+  longDur: 15,
+  set longDuration(newLongDuration) {
+    this.longDur = newLongDuration;
+    if (this.current === "long") {
+      let passed = this.duration - this.minutes;
+      if (passed < newLongDuration || (passed === newLongDuration && this.seconds > 0)) {
+        this.duration = newLongDuration;
+        this.minutes = newLongDuration - passed;
+      } else {
+        this.current = "long";
+      }
+    }
+  },
+  get longDuration() {
+    return this.longDur;
+  },
 
   // After how many tomatoes should 
   // - a long break start after you finish a tomato if the autoSwitchTask === true
