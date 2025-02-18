@@ -59,4 +59,15 @@ export const settings = {
     }
     localStorage.autoStartBreaks = timer.autoStartBreaks.toString();
   },
+
+  returnToDefaults() {
+    this.setTomatoDuration(45);
+    this.setShortDuration(5);
+    this.setLongDuration(15);
+    this.setWhenLongStarts(2);
+    timer.autoStartBreaks = false;
+    localStorage.autoStartBreaks = "false";
+    timer.autoStartTomatoes = false;
+    localStorage.autoStartTomatoes = "false";
+  }
 };
