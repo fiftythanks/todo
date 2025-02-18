@@ -3,11 +3,6 @@ import { taskList } from "./todo.js";
 
 // Where time is the value, it's set in minutes
 export const settings = {
-  // When a task is completed, should the app automatically focus on the next task or stay on the same task and continue counting tomatoes on it until the user switches the task manually
-  autoSwitchTask: false,
-
-  // When a task is completed, should the app automatically check it, or should it leave the task unchecked
-  autoCheckTask: false,
 
   setTomatoDuration(minutes) {
     timer.tomatoDuration = minutes;
@@ -27,20 +22,22 @@ export const settings = {
     localStorage.longInterval = tomatoes;
   },
 
-  toggleAutoSwitchTask() {
-    if (this.autoSwitchTask === false) {
-      this.autoSwitchTask = true;
+  toggleAutoSwitchTasks() {
+    if (timer.autoSwitchTasks === false) {
+      timer.autoSwitchTasks = true;
     } else {
-      this.autoSwitchTask = false;
+      timer.autoSwitchTasks = false;
     }
+    localStorage.autoSwitchTasks = timer.autoSwitchTasks.toString();
   },
 
-  toggleAutoCheckTask() {
-    if (this.autoCheckTask === false) {
-      this.autoCheckTask = true;
+  toggleAutoCheckTasks() {
+    if (timer.autoCheckTasks === false) {
+      timer.autoCheckTasks = true;
     } else {
-      this.autoCheckTask = false;
+      timer.autoCheckTasks = false;
     }
+    localStorage.autoCheckTasks = timer.autoCheckTasks.toString();
   },
 
   toggleAutoStartTomatoes() {
@@ -70,5 +67,9 @@ export const settings = {
     localStorage.autoStartBreaks = "false";
     timer.autoStartTomatoes = false;
     localStorage.autoStartTomatoes = "false";
-  }
+    timer.autoSwitchTasks = false;
+    localStorage.autoSwitchTasks = "false";
+    timer.autoCheckTasks = false;
+    localStorage.autoCheckTasks = "false";
+  } 
 };

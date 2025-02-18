@@ -5,8 +5,8 @@ import { timer, initializeTimer } from "./timer.js";
 import { taskList, initializeTaskList } from "./todo.js";
 
 function initializeApp() {
-  initializeTimer();
   initializeTaskList();
+  initializeTimer();
 }
 initializeApp();
 window.timer = timer;

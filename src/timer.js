@@ -1,4 +1,4 @@
-
+import { taskList } from "./todo.js";
 
 export const timer = {
   tomatoDur: 45,
@@ -68,6 +68,8 @@ export const timer = {
 
   autoStartTomatoes: false,
   autoStartBreaks: false,
+  autoSwitchTasks: false,
+  autoCheckTasks: false,
 
   tomatoesTotal: 0,
 
@@ -155,9 +157,7 @@ export const timer = {
 
   finishInterval() {
     if (!this.paused) {
-      clearInterval(this.timer);  
-      this.paused = true;
-      localStorage.paused = "true";
+      this.pause();
       if (this.current === "tomato") {
         this.tomatoesTotal++;   
         localStorage.tomatoesTotal = this.tomatoesTotal;
@@ -169,6 +169,21 @@ export const timer = {
           this.current = "long";
         } else {
           this.current = "short";
+        }
+        if (this.currentTask) {
+          taskList.changeTomatoesDone(this.currentTask.name, this.currentTask.tomatoesDone + 1);
+          if (
+            this.currentTask.tomatoesDone === this.currentTask.tomatoesToDo
+            && this.autoCheckTasks === true
+          ) {
+            taskList.completeTask(this.currentTask.name);
+            if (
+              this.autoSwitchTasks === true
+              && taskList.taskList.indexOf(this.currentTask.name) < taskList.taskList.length + 1
+            ) {
+              this.switchTask(taskList.taskList[taskList.taskList.indexOf(this.currentTask.name) + 1]);   
+            }
+          }
         }
         console.log(`It's time for a break. You have ${this.duration} minutes.`); 
         if (this.autoStartBreaks === true) this.start();
@@ -188,6 +203,16 @@ export const timer = {
     localStorage.tomatoesInCycle = "0";
     localStorage.tomatoesInCycle = "0";
     this.current = "tomato";
+  },
+
+  currentTask: undefined,
+  switchTask(name) {
+    if (Object.hasOwn(taskList, name)) {
+      this.currentTask = taskList[name];
+      localStorage.setItem("currentTask", `${name}`);
+    } else {
+      console.error("There's no such task. Provide a valid task name in the string format.");
+    }
   }
 };
 
@@ -232,6 +257,22 @@ export function initializeTimer() {
     timer.autoStartBreaks = false;
   }
 
+  if (!localStorage.autoSwitchTasks) {
+    localStorage.autoSwitchTasks = timer.autoSwitchTasks.toString();
+  } else if (localStorage.autoSwitchTasks === "true") {
+    timer.autoSwitchTasks = true;
+  } else if (localStorage.autoCheckTasks === "false") {
+    timer.autoCheckTasks = false;
+  }
+
+  if (!localStorage.autoCheckTasks) {
+    localStorage.autoCheckTasks = timer.autoCheckTasks.toString();
+  } else if (localStorage.autoCheckTasks === "true") {
+    timer.autoCheckTasks = true;
+  } else if (localStorage.autoCheckTasks === "false") {
+    timer.autoCheckTasks = false;
+  }
+
   if (!localStorage.current) {
     localStorage.current = timer.current;
   } else {
@@ -266,5 +307,9 @@ export function initializeTimer() {
     localStorage.paused = "true";
   } else if (localStorage.paused === "false") {
     timer.start();
+  }
+
+  if (localStorage.currentTask) {
+    timer.currentTask = taskList[localStorage.currentTask];
   }
 }

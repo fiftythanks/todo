@@ -1,5 +1,8 @@
+import { timer } from "./timer.js";
+
 class Task {
   constructor(name, tomatoes) {
+    this.name = name;
     this.tomatoesToDo = tomatoes;
     this.tomatoesDone = 0;
     this.completed = false;
@@ -23,6 +26,10 @@ export const taskList = {
   },
   removeTask(name) {
     if (Object.hasOwn(this, name)) {
+      if (timer.currentTask === this[name]) {
+        timer.currentTask = undefined;
+        localStorage.removeItem("currentTask");
+      }
       delete this[name];
       localStorage.removeItem(`${name}TomatoesToDo`);
       localStorage.removeItem(`${name}TomatoesDone`);
@@ -43,6 +50,15 @@ export const taskList = {
       console.error("There's no such task. The first parameter has to be the name of the task.");
     }
   },
+  removeNoteFrom(name) {
+    if (Object.hasOwn(this, name)) {
+      this[name].note = undefined;
+      localStorage.removeItem(`${name}Note`);
+    } else {
+      console.error("There's no such task. The first parameter has to be the name of the task.");
+    }
+  },
+
   changeNameOf(name, newName) {
     if (Object.hasOwn(this, name)) {
       if (typeof newName === "string") {
@@ -50,6 +66,10 @@ export const taskList = {
         this[newName].tomatoesDone = this[name].tomatoesDone;
         this[newName].completed = this[name].completed;
         this[newName].note = this[name].note;
+        if (timer.currentTask === this[name]) {
+          timer.currentTask = this[newName];
+          localStorage.currentTask = newName;
+        }
         this.removeTask(name);
         localStorage.setItem(
           `${newName}TomatoesToDo`,
@@ -129,6 +149,7 @@ export function initializeTaskList() {
         }
         taskList[taskName] = {
           note,
+          name: taskName,
           tomatoesToDo: Number.parseInt(localStorage[`${taskName}TomatoesToDo`]),
           tomatoesDone: Number.parseInt(localStorage[`${taskName}TomatoesDone`]),
           completed: JSON.parse(localStorage[`${taskName}Completed`]),
