@@ -1,4 +1,5 @@
 import { timer } from "./timer.js";
+import { taskList } from "./todo.js";
 
 // Where time is the value, it's set in minutes
 export const settings = {
