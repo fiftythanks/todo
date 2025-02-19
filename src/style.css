@@ -1,0 +1,200 @@
+/*
+  Josh's Custom CSS Reset
+  https://www.joshwcomeau.com/css/custom-css-reset/
+*/
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+p {
+  text-wrap: pretty;
+}
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+#root, #__next {
+  isolation: isolate;
+}
+
+/* My styles */
+body {
+  background-color: #000;
+  color: #fff;
+  font-family: "Ubuntu Mono";
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100dvh;
+  width: max(calc(14ch * 2 + 10px), 100vw);
+  align-items: center;
+  padding: 5px;
+}
+h1, h2 {
+  font-weight: 400;
+}
+
+button {
+  background: none;
+  color: inherit;
+  border: none;
+  &:hover { cursor: pointer; }
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  & button {
+    width: 8ch;
+    border-radius: 2px;
+  }
+  /* this will be set with JS when User presses a btn */
+  .tomato { 
+    background-color: rgb(255 255 255 / 0.2);
+  }
+  
+  button {
+    background-color: rgb(255 255 255 / 0.05);
+  }
+}
+
+.clock {
+  font-size: 5rem;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.tasks-title-wrapper {
+  position: relative;
+  margin-bottom: 16px;
+}
+h2 {
+  text-align: center;
+  /* text-decoration didn't look nice in Chromium-based browsers, so I made a custom underline */
+  & + .underline {
+    position: absolute;
+    bottom: 5px;
+    left: calc(50% - 2.5ch * 1.5);
+    width: calc(5ch * 1.5);
+    height: 1px;
+    background-color: #fff;
+  }
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.tasks {
+  display: flex;
+  flex-direction: column;
+}
+
+.task {
+  .main {
+    display: flex;
+    gap: 1ch;
+    .tomatoes {
+      margin-left: auto;
+      flex-wrap: nowrap;
+    }
+  }
+  .note {
+    opacity: 0.5;
+    padding: 0 6ch 0 4ch; 
+  }
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  .progress {
+    display: flex;
+    align-items: first baseline;
+  } 
+  .progress-bar {
+    height: 1ex;
+    width: calc((6 / 20) * 100%);
+    background-color: #fff;
+  }
+  .right-brace {
+    margin-left: auto;
+  }
+  .create-task {
+    font-size: 2rem;
+    align-self: center;
+    background-color: rgb(255 255 255 / 0.05);
+    padding: 0 16px;
+    margin-top: 32px;
+    border-radius: 2px;
+  }
+}
+
+@media (min-width: calc(14rem + 110px)) {
+  body {
+    gap: 32px;
+  }
+  header {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .menu-btn {
+    position: absolute;
+    top: 0.3rem;
+    right: 0  ;
+  }
+  .clock {
+    font-size: 6rem;
+    line-height: 1;   
+  }
+}
+
+@media (min-width: 65ch) {
+  body {
+    padding: 0 calc((100vw - 65ch) / 2);
+  }
+  header {
+    width: 100%;
+  }
+  /* h1 {
+    align-self: flex-start;
+  } */
+  .menu-btn {
+    right: calc((100vw - 65ch) / 2);
+  }
+  footer { padding: 0 6ch 0 4ch; }
+} 
+
+.checked + .name { text-decoration-line: line-through; }

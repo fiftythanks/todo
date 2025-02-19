@@ -4,7 +4,90 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>To-Do List/Pomodoro Timer</title>
-</head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+</head>                       
 <body>
+  <header>
+    <h1>Pomodoro Timer</h1>
+    <button type="button" class="menu-btn"      ><img src="./img/menu.svg" width="45px" height="45px"></button> 
+  </header>
+  <main>
+    <div class="timer">
+      <div class="controls">
+        <button type="button" class="tomato">Tomato</button>
+        <button type="button" class="short">Short</button>
+        <button type="button" class="long">Long</button>
+        <button type="button" class="next">Next</button>
+      </div>
+      <div class="clock">45:00</div>
+    </div>
+    <div class="task-list">
+      <div class="tasks-title-wrapper">
+        <h2>Tasks</h2>
+        <div class="underline"></div>
+      </div>
+      <ul class="tasks">
+        <li class="task">
+          <div class="main">
+            <div class="check">[&nbsp;]</div>
+            <div class="name">Pomodoro Project</div>
+            <div class="tomatoes">[<span class="done">2</span>/<span class="to-do">4</span>]</div>
+          </div>
+          <div class="note">I want my timer to be minimalistic, somewhat reminding of a Linux terminal. It should have a mono font.</div>
+        </li>
+        <li class="task">
+          <div class="main">
+            <div class="check">[&nbsp;]</div>
+            <div class="name">JavaScript</div>
+            <div class="tomatoes">[<span class="done">0</span>/<span class="to-do">4</span>]</div>
+          </div>
+        </li>
+        <li class="task">
+          <div class="main">
+            <div class="check">[&nbsp;]</div>
+            <div class="name">Laundry</div>
+            <div class="tomatoes">[<span class="done">0</span>/<span class="to-do">4</span>]</div>
+          </div>
+        </li>
+        <li class="task">
+          <div class="main">
+            <div class="check">[&nbsp;]</div>
+            <div class="name">Anki</div>
+            <div class="tomatoes">[<span class="done">0</span>/<span class="to-do">4</span>]</div>
+          </div>
+        </li>
+        <li class="task">
+          <div class="main">
+            <div class="check checked">[x]</div>
+            <div class="name">General WebDev Education</div>
+            <div class="tomatoes">[<span class="done">4</span>/<span class="to-do">4</span>]</div>
+          </div>
+          <div class="note">
+            Priority list:<br>
+              1. MDN design.<br>
+              2. The typography articles.<br>
+              3. “CSS: The Definitive Guide”.<br>
+              4. The To Read list.<br>
+              5. Collecting new articles for the list.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </main>
+  <footer>
+    <div class="progress">
+      <div class="left-brace">[</div>
+      <div class="progress-bar"></div>
+      <div class="right-brace">]</div>
+    </div>
+    <div class="done-finish">
+      <div class="done-wrapper">Done: <span class="tomatoes-done">6</span>/<span class="tomatoes-to-do">20</span> tomatoes (<span class="done-percent">30</span>%)</div>
+      <div class="finish-wrapper">Finish: <span class="when-finish">01:12</span> (<span class="how-long-hours">12</span>h <span class="how-long-minutes">50</span>m)</div>
+    </div>
+    
+    <button type="button" class="create-task">New Task</button>
+  </footer>
 </body>
 </html>
