@@ -33,7 +33,7 @@ export const settings = {
 
   toggleAutoCheckTasks() {
     if (timer.autoCheckTasks === false) {
-      timer.autoCheckTasks = true;
+      timer.autoCheckTasks = true;    
     } else {
       timer.autoCheckTasks = false;
     }

@@ -171,17 +171,31 @@ export const timer = {
           this.current = "short";
         }
         if (this.currentTask) {
-          taskList.changeTomatoesDone(this.currentTask.name, this.currentTask.tomatoesDone + 1);
+          let test = new RegExp(`^${this.currentTask.name}K3AVskU2o28b2MW`);
+          let filteredTasks = taskList.taskList.filter((key) => {
+            if (key.match(test)) return true;
+            return false;
+          });
+          let position = filteredTasks.indexOf(this.currentTask.fullName);
+          taskList.changeTomatoesDone(this.currentTask.name, this.currentTask.tomatoesDone + 1, position);
           if (
             this.currentTask.tomatoesDone === this.currentTask.tomatoesToDo
             && this.autoCheckTasks === true
           ) {
-            taskList.completeTask(this.currentTask.name);
+            taskList.checkTask(this.currentTask.name, position);
             if (
               this.autoSwitchTasks === true
-              && taskList.taskList.indexOf(this.currentTask.name) < taskList.taskList.length + 1
+              && taskList.taskList.indexOf(this.currentTask.fullName) < taskList.taskList.length - 1
             ) {
-              this.switchTask(taskList.taskList[taskList.taskList.indexOf(this.currentTask.name) + 1]);   
+              let nextTaskFullName = taskList.taskList[taskList.taskList.indexOf(this.currentTask.fullName) + 1];
+              let nextTask = taskList[nextTaskFullName].name; 
+              let test = new RegExp(`^${nextTask}K3AVskU2o28b2MW`);
+              let filteredTasks = taskList.taskList.filter((key) => {
+                if (key.match(test)) return true;
+                return false;
+              });
+              let nextPosition = filteredTasks.indexOf(nextTaskFullName);
+              this.switchTask(nextTask, nextPosition);
             }
           }
         }
@@ -206,10 +220,45 @@ export const timer = {
   },
 
   currentTask: undefined,
-  switchTask(name) {
-    if (Object.hasOwn(taskList, name)) {
-      this.currentTask = taskList[name];
-      localStorage.setItem("currentTask", `${name}`);
+  switchTask(name, position) {
+    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+    let filteredTasks = taskList.taskList.filter((key) => {
+      if (key.match(test)) return true;
+      return false;
+    });
+    let isThereSuchTask = filteredTasks.length > 0;
+    let areThereDuplicates = filteredTasks.length > 1;
+    if (isThereSuchTask) {
+      if (areThereDuplicates) {
+        if (position === undefined) {
+          let filteredTasksString = "";
+          filteredTasks.forEach((fullName, index) => {
+            filteredTasksString += `\n\n${index}: ${name}, tomatoes done: ${taskList[fullName].tomatoesDone}, tomatoes to do: ${taskList[fullName].tomatoesToDo}`;
+            if (taskList[fullName].completed === true) {
+              filteredTasksString += ", completed";
+            } else if (taskList[fullName].completed === false) {
+              filteredTasksString += ", isn't completed";
+            }
+            if (taskList[fullName].note && taskList[fullName].note !== "") {
+              filteredTasksString += `, note: ${taskList[fullName].note}`;
+            }
+            filteredTasksString += `, created: ${format(taskList[fullName].created, "HH:mm:ss dd/MM/y")}`
+            filteredTasksString += ".";
+          });
+          position = prompt(`There are several tasks with this name:${filteredTasksString}\n\nWhich one do you wish to focus on at the moment? (Type in the number.)`);
+        }
+        if (
+          Number.parseInt(position) < 0
+          || Number.parseInt(position) >= filteredTasks.length
+        ) {
+          return new Error("Wrong number. Try again.");
+        }
+      } else {
+        position = 0;
+      }
+      let fullName = filteredTasks[position];
+      this.currentTask = taskList[fullName];
+      localStorage.setItem("currentTask", `${fullName}`);
     } else {
       console.error("There's no such task. Provide a valid task name in the string format.");
     }

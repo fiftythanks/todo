@@ -27,6 +27,8 @@ export const taskList = {
       this[fullName] = new Task(fullName, tomatoes);
       this[fullName].name = name;
       localStorage.setItem(`${fullName}Name`, name);
+      this[fullName].fullName = fullName;
+      localStorage.setItem(`${fullName}FullName`, fullName);
       this.taskList.push(fullName);
       localStorage.taskList = JSON.stringify(this.taskList);
       this[fullName].created = new Date();
@@ -40,6 +42,8 @@ export const taskList = {
       this[fullName] = new Task(fullName, tomatoes);
       this[fullName].name = name;
       localStorage.setItem(`${fullName}Name`, name);
+      this[fullName].fullName = fullName;
+      localStorage.setItem(`${fullName}FullName`, fullName);
       this.taskList.push(fullName);
       localStorage.taskList = JSON.stringify(this.taskList);
       this[fullName].created = new Date();
@@ -65,6 +69,7 @@ export const taskList = {
           }
           delete this[name];
           localStorage.removeItem(`${name}Name`);
+          localStorage.removeItem(`${name}FullName`);
           localStorage.removeItem(`${name}TomatoesToDo`);
           localStorage.removeItem(`${name}TomatoesDone`);
           localStorage.removeItem(`${name}Completed`);
@@ -104,6 +109,7 @@ export const taskList = {
           }
           delete this[name];
           localStorage.removeItem(`${name}Name`);
+          localStorage.removeItem(`${name}FullName`);
           localStorage.removeItem(`${name}TomatoesToDo`);
           localStorage.removeItem(`${name}TomatoesDone`);
           localStorage.removeItem(`${name}Completed`);
@@ -428,7 +434,7 @@ export const taskList = {
       }
       let fullName = filteredTasks[position];
       if (
-        typeof newTomatoesToDo === "number" 
+        typeof newTomatoesDone === "number" 
         && Number.isInteger(newTomatoesDone)
         && newTomatoesDone >= 0
       ) {
@@ -481,6 +487,7 @@ export function initializeTaskList() {
         taskList[taskName] = {
           note,
           name: localStorage[`${taskName}Name`],
+          fullName: localStorage[`${taskName}FullName`],
           tomatoesToDo: Number.parseInt(localStorage[`${taskName}TomatoesToDo`]),
           tomatoesDone: Number.parseInt(localStorage[`${taskName}TomatoesDone`]),
           completed: JSON.parse(localStorage[`${taskName}Completed`]),
