@@ -1,8 +1,8 @@
 import { timer } from "./timer.js";
+import { parseJSON, format } from "date-fns";
 
 class Task {
   constructor(name, tomatoes) {
-    this.name = name;
     this.tomatoesToDo = tomatoes;
     this.tomatoesDone = 0;
     this.completed = false;
@@ -16,96 +16,372 @@ class Task {
 export const taskList = {
   taskList: [],
   createTask(name, tomatoes) {
-    if (!Object.hasOwn(this, name)) {
-      this[name] = new Task(name, tomatoes);
-      this.taskList.push(name);
+    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+    let filteredTasks = this.taskList.filter((key) => {
+      if (key.match(test)) return true;
+      return false;
+    });
+    let isThereSuchTask = filteredTasks.length > 0;
+    if (!isThereSuchTask) {
+      let fullName = `${name}K3AVskU2o28b2MW0`;
+      this[fullName] = new Task(fullName, tomatoes);
+      this[fullName].name = name;
+      localStorage.setItem(`${fullName}Name`, name);
+      this.taskList.push(fullName);
       localStorage.taskList = JSON.stringify(this.taskList);
+      this[fullName].created = new Date();
+      localStorage[`${fullName}Created`] = JSON.stringify(this[fullName].created);
     } else {
-      console.error("A task with this name already exists. Each task has to have a unique name.");
+      let identifier = 0;
+      let fullName = `${name}K3AVskU2o28b2MW${identifier}`;
+      while (this.taskList.includes(fullName)) {
+        fullName = `${name}K3AVskU2o28b2MW${++identifier}`;
+      }
+      this[fullName] = new Task(fullName, tomatoes);
+      this[fullName].name = name;
+      localStorage.setItem(`${fullName}Name`, name);
+      this.taskList.push(fullName);
+      localStorage.taskList = JSON.stringify(this.taskList);
+      this[fullName].created = new Date();
+      localStorage[`${fullName}Created`] = JSON.stringify(this[fullName].created);
     }
   },
-  removeTask(name) {
-    if (Object.hasOwn(this, name)) {
-      if (timer.currentTask === this[name]) {
-        timer.currentTask = undefined;
-        localStorage.removeItem("currentTask");
+
+  removeTask(name, position) {
+    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+    let filteredTasks = this.taskList.filter((key) => {
+      if (key.match(test)) return true;
+      return false;
+    });
+    let isThereSuchTask = filteredTasks.length > 0;
+    let areThereDuplicates = filteredTasks.length > 1;
+    if (isThereSuchTask) {
+      if (!areThereDuplicates) {
+        if (position === 0 && position === undefined) {
+          name = filteredTasks[0];
+          if (timer.currentTask === this[name]) {
+            timer.currentTask = undefined;
+            localStorage.removeItem("currentTask");
+          }
+          delete this[name];
+          localStorage.removeItem(`${name}Name`);
+          localStorage.removeItem(`${name}TomatoesToDo`);
+          localStorage.removeItem(`${name}TomatoesDone`);
+          localStorage.removeItem(`${name}Completed`);
+          if (localStorage[`${name}Note`]) localStorage.removeItem(`${name}Note`);
+          localStorage.removeItem(`${name}Created`)
+          this.taskList.splice(this.taskList.indexOf(name), 1);
+          localStorage.taskList = JSON.stringify(this.taskList);
+        } else {
+          console.error("There's only one such task. Either don't provide the second argument or provide 0 as the second argument.");
+        }
+      } else {
+        if (position === undefined) {
+          let filteredTasksString = "";
+          filteredTasks.forEach((fullName, index) => {
+            filteredTasksString += `\n\n${index}: ${name}, tomatoes done: ${this[fullName].tomatoesDone}, tomatoes to do: ${this[fullName].tomatoesToDo}`;
+            if (this[fullName].completed === true) {
+              filteredTasksString += ", completed";
+            } else if (this[fullName].completed === false) {
+              filteredTasksString += ", isn't completed";
+            }
+            if (this[fullName].note && this[fullName].note !== "") {
+              filteredTasksString += `, note: ${this[fullName].note}`;
+            }
+            filteredTasksString += `, created: ${format(this[fullName].created, "HH:mm:ss dd/MM/y")}`
+            filteredTasksString += ".";
+          });
+          position = prompt(`There are several tasks with this name:${filteredTasksString}\n\nWhich one do you want to remove? (Type in the number.)`);
+        }
+        if (
+          Number.parseInt(position) >= 0
+          && Number.parseInt(position) < filteredTasks.length
+        ) {
+          name = filteredTasks[position];
+          if (timer.currentTask === this[name]) {
+            timer.currentTask = undefined;
+            localStorage.removeItem("currentTask");
+          }
+          delete this[name];
+          localStorage.removeItem(`${name}Name`);
+          localStorage.removeItem(`${name}TomatoesToDo`);
+          localStorage.removeItem(`${name}TomatoesDone`);
+          localStorage.removeItem(`${name}Completed`);
+          if (localStorage[`${name}Note`]) localStorage.removeItem(`${name}Note`);
+          localStorage.removeItem(`${name}Created`)
+          this.taskList.splice(this.taskList.indexOf(name), 1);
+          localStorage.taskList = JSON.stringify(this.taskList);
+        } else {
+          console.error("Wrong number. Try again.");
+        }
       }
-      delete this[name];
-      localStorage.removeItem(`${name}TomatoesToDo`);
-      localStorage.removeItem(`${name}TomatoesDone`);
-      localStorage.removeItem(`${name}Completed`);
-      if (localStorage[`${name}Note`]) localStorage.removeItem(`${name}Note`);
-      this.taskList.splice(this.taskList.indexOf(name), 1);
-      localStorage.taskList = JSON.stringify(this.taskList);
     } else {
       console.error("There's no task with this name.");
     }
   },
-  addNoteTo(name, noteText) {
-    if (Object.hasOwn(this, name)) {
-      if (typeof noteText !== "string") noteText.toString();
-      this[name].note = noteText;
-      localStorage[`${name}Note`] = noteText;
+  addNoteTo(name, noteText, position) {
+    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+    let filteredTasks = this.taskList.filter((key) => {
+      if (key.match(test)) return true;
+      return false;
+    });
+    let isThereSuchTask = filteredTasks.length > 0;
+    let areThereDuplicates = filteredTasks.length > 1;
+    if (isThereSuchTask) {
+      if (!areThereDuplicates) {
+        if (Number.parseInt(position) === 0 || position === undefined) {
+          name = filteredTasks[0];
+          if (typeof noteText !== "string") noteText.toString();
+          this[name].note = noteText;
+          localStorage[`${name}Note`] = noteText;
+        } else {
+          console.error("Provide a valid position. There's only one such element the only valid position is 0. You can omit the third parameter, and the result will be the same as if you passed 0 to the method.");
+        }
+      } else {
+        if (position === undefined) {
+          let filteredTasksString = "";
+          filteredTasks.forEach((fullName, index) => {
+            filteredTasksString += `\n\n${index}: ${name}, tomatoes done: ${this[fullName].tomatoesDone}, tomatoes to do: ${this[fullName].tomatoesToDo}`;
+            if (this[fullName].completed === true) {
+              filteredTasksString += ", completed";
+            } else if (this[fullName].completed === false) {
+              filteredTasksString += ", isn't completed";
+            }
+            if (this[fullName].note && this[fullName].note !== "") {
+              filteredTasksString += `, note: ${this[fullName].note}`;
+            }
+            filteredTasksString += `, created: ${format(this[fullName].created, "HH:mm:ss dd/MM/y")}`
+            filteredTasksString += ".";
+          });
+          position = prompt(`There are several tasks with this name:${filteredTasksString}\n\nWhich one do you want to remove? (Type in the number.)`);
+        }
+        if (
+          Number.parseInt(position) >= 0
+          && Number.parseInt(position) < filteredTasks.length
+        ) {
+          name = filteredTasks[position];
+          if (typeof noteText !== "string") noteText.toString();
+          this[name].note = noteText;
+          localStorage[`${name}Note`] = noteText;
+        } else {
+          console.error("Wrong number. Try again.");
+        }
+      }
     } else {
       console.error("There's no such task. The first parameter has to be the name of the task.");
     }
   },
-  removeNoteFrom(name) {
-    if (Object.hasOwn(this, name)) {
-      this[name].note = undefined;
-      localStorage.removeItem(`${name}Note`);
+  removeNoteFrom(name, position) {
+    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+    let filteredTasks = this.taskList.filter((key) => {
+      if (key.match(test)) return true;
+      return false;
+    });
+    let isThereSuchTask = filteredTasks.length > 0;
+    let areThereDuplicates = filteredTasks.length > 1;
+    if (isThereSuchTask) {
+      if (!areThereDuplicates) {
+        if (Number.parseInt(position) === 0 || position === undefined) {
+          name = filteredTasks[0];
+          this[name].note = undefined;
+          localStorage.removeItem(`${name}Note`);
+        } else {
+          console.error("Provide a valid position. There's only one such element the only valid position is 0. You can omit the third parameter, and the result will be the same as if you passed 0 to the method.");
+        }
+      } else {
+        if (position === undefined) {
+          let filteredTasksString = "";
+          filteredTasks.forEach((fullName, index) => {
+            filteredTasksString += `\n\n${index}: ${name}, tomatoes done: ${this[fullName].tomatoesDone}, tomatoes to do: ${this[fullName].tomatoesToDo}`;
+            if (this[fullName].completed === true) {
+              filteredTasksString += ", completed";
+            } else if (this[fullName].completed === false) {
+              filteredTasksString += ", isn't completed";
+            }
+            if (this[fullName].note && this[fullName].note !== "") {
+              filteredTasksString += `, note: ${this[fullName].note}`;
+            }
+            filteredTasksString += `, created: ${format(this[fullName].created, "HH:mm:ss dd/MM/y")}`
+            filteredTasksString += ".";
+          });
+          position = prompt(`There are several tasks with this name:${filteredTasksString}\n\nWhich one do you want to remove? (Type in the number.)`);
+        }
+        if (
+          Number.parseInt(position) >= 0
+          && Number.parseInt(position) < filteredTasks.length
+        ) {
+          name = filteredTasks[position];
+          this[name].note = undefined;
+          localStorage.removeItem(`${name}Note`);
+        } else {
+          console.error("Wrong number. Try again.");
+        }
+      }
     } else {
       console.error("There's no such task. The first parameter has to be the name of the task.");
     }
   },
 
-  changeNameOf(name, newName) {
-    if (Object.hasOwn(this, name)) {
+  changeNameOf(name, newName, position) {
+    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+    let filteredTasks = this.taskList.filter((key) => {
+      if (key.match(test)) return true;
+      return false;
+    });
+    let isThereSuchTask = filteredTasks.length > 0;
+    let areThereDuplicates = filteredTasks.length > 1;
+    if (isThereSuchTask) {
       if (typeof newName === "string") {
-        this.createTask(newName, this[name].tomatoesToDo);
-        this[newName].tomatoesDone = this[name].tomatoesDone;
-        this[newName].completed = this[name].completed;
-        this[newName].note = this[name].note;
-        if (timer.currentTask === this[name]) {
-          timer.currentTask = this[newName];
-          localStorage.currentTask = newName;
+        if (areThereDuplicates) {
+          if (position === undefined) {
+            let filteredTasksString = "";
+            filteredTasks.forEach((fullName, index) => {
+              filteredTasksString += `\n\n${index}: ${name}, tomatoes done: ${this[fullName].tomatoesDone}, tomatoes to do: ${this[fullName].tomatoesToDo}`;
+              if (this[fullName].completed === true) {
+                filteredTasksString += ", completed";
+              } else if (this[fullName].completed === false) {
+                filteredTasksString += ", isn't completed";
+              }
+              if (this[fullName].note && this[fullName].note !== "") {
+                filteredTasksString += `, note: ${this[fullName].note}`;
+              }
+              filteredTasksString += `, created: ${format(this[fullName].created, "HH:mm:ss dd/MM/y")}`
+              filteredTasksString += ".";
+            });
+            position = prompt(`There are several tasks with this name:${filteredTasksString}\n\nWhich one's name do you want to change? (Type in the number.)`);
+          }
+          if (
+            Number.parseInt(position) < 0
+            || Number.parseInt(position) >= filteredTasks.length
+          ) {
+            return new Error("Wrong number. Try again.");
+          }
+        } else {
+          position = 0;
+        }
+        let fullName = filteredTasks[position];
+        this.createTask(newName, this[fullName].tomatoesToDo);
+        let newTest = new RegExp(`^${newName}K3AVskU2o28b2MW`);
+        let newFilteredTasks = this.taskList.filter((key) => {
+          if (key.match(newTest)) return true;
+          return false;
+        });
+        let newTaskPosition = newFilteredTasks.length - 1;
+        let newFullName = newFilteredTasks[newTaskPosition];
+        this.changeTomatoesDone(newName, this[fullName].tomatoesDone, newTaskPosition);
+        if (this[fullName].completed) {
+          this.checkTask(newName, newTaskPosition);
+        }
+        if (this[fullName].note !== undefined && this[fullName].note !== "") {
+          this.addNoteTo(newName, this[fullName].note, newTaskPosition);
+        }
+        this[newFullName].created = this[fullName].created;
+        localStorage.setItem(`${newFullName}Created`, JSON.stringify(this[newFullName].created));
+        if (timer.currentTask === this[fullName]) {
+          timer.currentTask = this[newFullName];
+          localStorage.setItem("currentTask", newFullName);
         }
         this.removeTask(name);
-        localStorage.setItem(
-          `${newName}TomatoesToDo`,
-          this[newName].tomatoesToDo,
-        );
-        localStorage.setItem(
-          `${newName}TomatoesDone`,
-          this[newName].tomatoesDone,
-        );
-        localStorage.setItem(
-          `${newName}Completed`,
-          this[newName].completed,
-        );
-        if (!this[newName].note) {
-          localStorage.setItem(`${newName}Note`, this[newName].note);
-        }
       } else {
         console.error("Provide a string as a new name for the task.");
       }
     } else {
-      console.error("There's no task with the provided name.");
+      console.error("There's no such task. The first parameter has to be the name of the task.");
     }
   },
-  completeTask(name) {
-    this[name].completed = true;
-    localStorage[`${name}Completed`] = "true";
+
+  checkTask(name, position) {
+    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+    let filteredTasks = this.taskList.filter((key) => {
+      if (key.match(test)) return true;
+      return false;
+    });
+    let isThereSuchTask = filteredTasks.length > 0;
+    let areThereDuplicates = filteredTasks.length > 1;
+    if (isThereSuchTask) {
+      if (areThereDuplicates) {
+        if (position === undefined) {
+          let filteredTasksString = "";
+          filteredTasks.forEach((fullName, index) => {
+            filteredTasksString += `\n\n${index}: ${name}, tomatoes done: ${this[fullName].tomatoesDone}, tomatoes to do: ${this[fullName].tomatoesToDo}`;
+            if (this[fullName].completed === true) {
+              filteredTasksString += ", completed";
+            } else if (this[fullName].completed === false) {
+              filteredTasksString += ", isn't completed";
+            }
+            if (this[fullName].note && this[fullName].note !== "") {
+              filteredTasksString += `, note: ${this[fullName].note}`;
+            }
+            filteredTasksString += `, created: ${format(this[fullName].created, "HH:mm:ss dd/MM/y")}`
+            filteredTasksString += ".";
+          });
+          position = prompt(`There are several tasks with this name:${filteredTasksString}\n\nWhich one do you want to check? (Type in the number.)`);
+        }
+        if (
+          Number.parseInt(position) < 0
+          || Number.parseInt(position) >= filteredTasks.length
+        ) {
+          return new Error("Wrong number. Try again.");
+        }
+      } else {
+        position = 0;
+      }
+      let fullName = filteredTasks[position];
+      if (this[fullName].completed === false) {
+        this[fullName].completed = true;
+        localStorage[`${fullName}Completed`] = "true";
+      } else {
+        this[fullName].completed = false;
+        localStorage[`${fullName}Completed`] = "false";
+      }
+    } else {
+      console.error("There's no such task. The first parameter has to be the name of the task.");
+    }
   },
-  changeTomatoesToDo(name, newTomatoesToDo) {
-    if (Object.hasOwn(this, name)) {
+  changeTomatoesToDo(name, newTomatoesToDo, position) {
+    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+    let filteredTasks = this.taskList.filter((key) => {
+      if (key.match(test)) return true;
+      return false;
+    });
+    let isThereSuchTask = filteredTasks.length > 0;
+    let areThereDuplicates = filteredTasks.length > 1;
+    if (isThereSuchTask) {
+      if (areThereDuplicates) {
+        if (position === undefined) {
+          let filteredTasksString = "";
+          filteredTasks.forEach((fullName, index) => {
+            filteredTasksString += `\n\n${index}: ${name}, tomatoes done: ${this[fullName].tomatoesDone}, tomatoes to do: ${this[fullName].tomatoesToDo}`;
+            if (this[fullName].completed === true) {
+              filteredTasksString += ", completed";
+            } else if (this[fullName].completed === false) {
+              filteredTasksString += ", isn't completed";
+            }
+            if (this[fullName].note && this[fullName].note !== "") {
+              filteredTasksString += `, note: ${this[fullName].note}`;
+            }
+            filteredTasksString += `, created: ${format(this[fullName].created, "HH:mm:ss dd/MM/y")}`
+            filteredTasksString += ".";
+          });
+          position = prompt(`There are several tasks with this name:${filteredTasksString}\n\nWhich one's estimated number of tomatoes to complete do you want to change? (Type in the number.)`);
+        }
+        if (
+          Number.parseInt(position) < 0
+          || Number.parseInt(position) >= filteredTasks.length
+        ) {
+          return new Error("Wrong number. Try again.");
+        }
+      } else {
+        position = 0;
+      }
+      let fullName = filteredTasks[position];
       if (
         typeof newTomatoesToDo === "number" 
         && Number.isInteger(newTomatoesToDo)
         && newTomatoesToDo >= 0
       ) {
-        this[name].tomatoesToDo = newTomatoesToDo;
-        localStorage[`${name}TomatoesToDo`] = newTomatoesToDo.toString();
+        this[fullName].tomatoesToDo = newTomatoesToDo;
+        localStorage.setItem(`${fullName}TomatoesToDo`, newTomatoesToDo.toString());
       } else {
         console.error("Provide a valid number of tomatoes. It must be a positive integer.")
       }
@@ -113,15 +389,51 @@ export const taskList = {
       console.error("There's no such task. The first parameter has to be the name of the task.");
     }
   },
-  changeTomatoesDone(name, newTomatoesDone) {
-    if (Object.hasOwn(this, name)) {
+
+  changeTomatoesDone(name, newTomatoesDone, position) {
+    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+    let filteredTasks = this.taskList.filter((key) => {
+      if (key.match(test)) return true;
+      return false;
+    });
+    let isThereSuchTask = filteredTasks.length > 0;
+    let areThereDuplicates = filteredTasks.length > 1;
+    if (isThereSuchTask) {
+      if (areThereDuplicates) {
+        if (position === undefined) {
+          let filteredTasksString = "";
+          filteredTasks.forEach((fullName, index) => {
+            filteredTasksString += `\n\n${index}: ${name}, tomatoes done: ${this[fullName].tomatoesDone}, tomatoes to do: ${this[fullName].tomatoesToDo}`;
+            if (this[fullName].completed === true) {
+              filteredTasksString += ", completed";
+            } else if (this[fullName].completed === false) {
+              filteredTasksString += ", isn't completed";
+            }
+            if (this[fullName].note && this[fullName].note !== "") {
+              filteredTasksString += `, note: ${this[fullName].note}`;
+            }
+            filteredTasksString += `, created: ${format(this[fullName].created, "HH:mm:ss dd/MM/y")}`
+            filteredTasksString += ".";
+          });
+          position = prompt(`There are several tasks with this name:${filteredTasksString}\n\nWhich one's number of tomatoes done do you want to change? (Type in the number.)`);
+        }
+        if (
+          Number.parseInt(position) < 0
+          || Number.parseInt(position) >= filteredTasks.length
+        ) {
+          return new Error("Wrong number. Try again.");
+        }
+      } else {
+        position = 0;
+      }
+      let fullName = filteredTasks[position];
       if (
-        typeof newTomatoesDone === "number" 
+        typeof newTomatoesToDo === "number" 
         && Number.isInteger(newTomatoesDone)
         && newTomatoesDone >= 0
       ) {
-        this[name].tomatoesDone = newTomatoesDone;
-        localStorage[`${name}TomatoesDone`] = newTomatoesDone.toString();
+        this[fullName].tomatoesDone = newTomatoesDone;
+        localStorage.setItem(`${fullName}TomatoesDone`, newTomatoesDone.toString());
       } else {
         console.error("Provide a valid number of tomatoes. It must be a positive integer.")
       }
@@ -129,6 +441,7 @@ export const taskList = {
       console.error("There's no such task. The first parameter has to be the name of the task.");
     }
   },
+
   clear() {
     for (let taskName of this.taskList) {
       this.removeTask(taskName);
@@ -149,13 +462,15 @@ export function initializeTaskList() {
         }
         taskList[taskName] = {
           note,
-          name: taskName,
+          name: localStorage[`${taskName}Name`],
           tomatoesToDo: Number.parseInt(localStorage[`${taskName}TomatoesToDo`]),
           tomatoesDone: Number.parseInt(localStorage[`${taskName}TomatoesDone`]),
           completed: JSON.parse(localStorage[`${taskName}Completed`]),
+          created: parseJSON(localStorage[`${taskName}Created`]),
         };
       }
     } else {
+      // if the property will for some reason be of an incorrect value
       localStorage.taskList = "[]";
     }
   } else {

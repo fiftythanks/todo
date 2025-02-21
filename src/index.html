@@ -31,7 +31,7 @@
       <ul class="tasks">
         <li class="task">
           <div class="main">
-            <div class="check">[&nbsp;]</div>
+            <button type="button" class="check">[ ]</button>
             <div class="name">Pomodoro Project</div>
             <div class="tomatoes">[<span class="done">2</span>/<span class="to-do">4</span>]</div>
           </div>
@@ -39,28 +39,44 @@
         </li>
         <li class="task">
           <div class="main">
-            <div class="check">[&nbsp;]</div>
+            <button type="button" class="check">[ ]</button>
             <div class="name">JavaScript</div>
             <div class="tomatoes">[<span class="done">0</span>/<span class="to-do">4</span>]</div>
           </div>
         </li>
         <li class="task">
           <div class="main">
-            <div class="check">[&nbsp;]</div>
+            <button type="button" class="check">[ ]</button>
             <div class="name">Laundry</div>
             <div class="tomatoes">[<span class="done">0</span>/<span class="to-do">4</span>]</div>
           </div>
         </li>
-        <li class="task">
-          <div class="main">
-            <div class="check">[&nbsp;]</div>
-            <div class="name">Anki</div>
-            <div class="tomatoes">[<span class="done">0</span>/<span class="to-do">4</span>]</div>
-          </div>
+        <li class="task-edit">
+          <form action="#" method="post">
+            <input type="text" name="name" id="name" placeholder="Enter task name" value="Anki" required>
+            <div class="label-wrapper"><label for="tomatoes-done">Done</label> / <label for="tomatoes-to-do">To do</label></div>
+            <div class="tomatoes-wrapper">
+              <div class="tomatoes-done-wrapper">
+                <input type="tel" name="tomatoes-done" id="tomatoes-done" value="0">
+                <button type="button" class="up"><img src="./img/up.svg" alt="Up" width="15px" height="15px"></button>
+                <button type="button" class="down"><img src="./img/down.svg" alt="Down" width="15px" height="15px">
+              </div></button>
+              <div class="tomatoes-to-do-wrapper">
+                <input type="tel" name="tomatoes-to-do" id="tomatoes-to-do" value="4">
+                <button type="button" class="up"><img src="./img/up.svg" alt="Up" width="15px" height="15px"></button>
+                <button type="button" class="down"><img src="./img/down.svg" alt="Down" width="15px" height="15px">
+              </div class="tomatoes-to-do-wrapper"></button>
+            </div>
+            <button type="button" class="add-note">Add Note</button>
+            <div class="form-submit-wrapper">
+              <button type="button" class="cancel">Cancel</button>
+              <button type="submit" class="save">Save</button>
+            </div>
+          </form>
         </li>
         <li class="task">
           <div class="main">
-            <div class="check checked">[x]</div>
+            <button type="button" class="check checked">[x]</button>
             <div class="name">General WebDev Education</div>
             <div class="tomatoes">[<span class="done">4</span>/<span class="to-do">4</span>]</div>
           </div>
@@ -72,9 +88,10 @@
               4. The To Read list.<br>
               5. Collecting new articles for the list.
           </div>
-        </li>
+        </li> 
       </ul>
     </div>
+    <button type="button" class="create-task">New Task</button>
   </main>
   <footer>
     <div class="progress">
@@ -86,8 +103,6 @@
       <div class="done-wrapper">Done: <span class="tomatoes-done">6</span>/<span class="tomatoes-to-do">20</span> tomatoes (<span class="done-percent">30</span>%)</div>
       <div class="finish-wrapper">Finish: <span class="when-finish">01:12</span> (<span class="how-long-hours">12</span>h <span class="how-long-minutes">50</span>m)</div>
     </div>
-    
-    <button type="button" class="create-task">New Task</button>
   </footer>
 </body>
 </html>
