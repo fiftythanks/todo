@@ -57,7 +57,7 @@ export const taskList = {
     let areThereDuplicates = filteredTasks.length > 1;
     if (isThereSuchTask) {
       if (!areThereDuplicates) {
-        if (position === 0 && position === undefined) {
+        if (position === 0 || position === undefined) {
           name = filteredTasks[0];
           if (timer.currentTask === this[name]) {
             timer.currentTask = undefined;
@@ -443,8 +443,26 @@ export const taskList = {
   },
 
   clear() {
-    for (let taskName of this.taskList) {
-      this.removeTask(taskName);
+    /* 
+    1. Identify all tasks with similar simplified names as just one task. Create an array of such tasks.
+    2. In a loop, for every one of those tasks, filter .taskList and get filteredTasks array.
+    3. In a for loop with a decreasing counter-index, call .removeTask() with the task and the counter-index as arguments.
+    */
+    let tasks = [];
+    this.taskList.forEach((fullName) => {
+      let name = fullName.replace(/K3AVskU2o28b2MW.*/g, "");
+      let wasCounted = tasks.includes(name);
+      if (!wasCounted) tasks.push(name);
+    });
+    for (let name of tasks) {
+      let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+      let filteredTasks = this.taskList.filter((fullName) => {
+        if (fullName.match(test)) return true;
+        return false;
+      });
+      for (let i = filteredTasks.length - 1; i >= 0; i--) {
+        this.removeTask(name, i);
+      }
     }
   }
 }
