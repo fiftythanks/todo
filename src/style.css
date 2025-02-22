@@ -133,12 +133,14 @@ ul {
   .main {
     display: flex;
     gap: 1ch;
+    align-items: first baseline;
     .check {
       padding: 0; 
       min-width: 3ch;
     }
-    .name:hover {
-      cursor: pointer;
+    .name {
+      width: 100%;
+      &:hover { cursor: pointer; }
     }
     .tomatoes {
       margin-left: auto;
