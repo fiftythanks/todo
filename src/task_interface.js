@@ -4,12 +4,13 @@ import down from "./img/down.svg";
 import cross from "./img/cross.svg";
 
 const list = document.querySelector("ul.tasks");
-export function renderItem(itemName) {
-  if (Object.hasOwn(taskList, itemName)) {
-    const item = taskList[itemName];
+export function renderItem(fullName) {
+  if (Object.hasOwn(taskList, fullName)) {
+    const item = taskList[fullName];
 
     const task = document.createElement("li");
     task.classList.add("task");
+    task.id = fullName;
 
     const header = document.createElement("div");
     header.classList.add("main");
@@ -23,7 +24,7 @@ export function renderItem(itemName) {
       checkBox.textContent = "[x]";
     }
     checkBox.addEventListener("click", () => {
-      taskList.checkTask(itemName);
+      taskList.checkTask(item.name, taskList.getTaskPosition(fullName));
       checkBox.classList.toggle("checked");
       if (item.completed === false) {
         checkBox.textContent = "[ ]";
@@ -35,7 +36,7 @@ export function renderItem(itemName) {
 
     const taskName = document.createElement("div");
     taskName.classList.add("name");
-    taskName.textContent = itemName;
+    taskName.textContent = item.name;
     header.appendChild(taskName);
 
     const tomatoes = document.createElement("div");
@@ -262,12 +263,12 @@ function createTask(e) {
     const formData = new FormData(form);
     const name = formData.get("name");
     const tomatoes = Number.parseInt(formData.get("est-tomatoes"));
-    taskList.createTask(name, tomatoes);
+    let fullName = taskList.createTask(name, tomatoes);
     if (formData.get("note") !== null) {
-      taskList.addNoteTo(name, formData.get("note"));
+      taskList.addNoteTo(name, formData.get("note"), taskList.getTaskPosition(fullName));
     }
     newTask.remove();
-    renderItem(name); 
+    renderItem(fullName);
     document.querySelector("main").appendChild(btnCreateTaskCopy);
   });
 

@@ -33,6 +33,7 @@ export const taskList = {
       localStorage.taskList = JSON.stringify(this.taskList);
       this[fullName].created = new Date();
       localStorage[`${fullName}Created`] = JSON.stringify(this[fullName].created);
+      return fullName;
     } else {
       let identifier = 0;
       let fullName = `${name}K3AVskU2o28b2MW${identifier}`;
@@ -48,6 +49,7 @@ export const taskList = {
       localStorage.taskList = JSON.stringify(this.taskList);
       this[fullName].created = new Date();
       localStorage[`${fullName}Created`] = JSON.stringify(this[fullName].created);
+      return fullName;
     }
   },
 
@@ -469,6 +471,41 @@ export const taskList = {
       for (let i = filteredTasks.length - 1; i >= 0; i--) {
         this.removeTask(name, i);
       }
+    }
+  },
+
+  doesTaskExist(name) {
+    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+    let filteredTasks = this.taskList.filter((fullName) => {
+      if (fullName.match(test)) return true;
+      return false;
+    });
+    return filteredTasks.length > 0;
+  },
+
+  areThereDuplicates(name) {
+    if (this.doesTaskExist(name)) {
+      let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
+      let filteredTasks = this.taskList.filter((fullName) => {
+        if (fullName.match(test)) return true;
+        return false;
+      });
+      return filteredTasks > 1;
+    } else {
+      return false;
+    }
+  },
+
+  getTaskPosition(fullName) {
+    if (Object.hasOwn(this, fullName)) {
+      let test = new RegExp(`^${this[fullName].name}K3AVskU2o28b2MW`);
+      let filteredTasks = this.taskList.filter((fullName) => {
+        if (fullName.match(test)) return true;
+        return false;
+      });
+      return filteredTasks.indexOf(fullName);
+    } else {
+      return new Error("There's no such task.");
     }
   }
 }
