@@ -283,8 +283,8 @@ function createTask(e) {
 const btnCreateTask = document.querySelector(".create-task");
 btnCreateTask.addEventListener("click", createTask);
 
-////////////////////
-
-
-
-    
+export function initializeUIList() {
+  for (let task of taskList.taskList) {
+    renderItem(task);
+  }
+}
