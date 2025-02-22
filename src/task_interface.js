@@ -34,9 +34,437 @@ export function renderItem(fullName) {
     });
     header.appendChild(checkBox);
 
+    function openEditUI(e) {
+      Array.from(task.children).forEach((child) => child.remove());
+      task.classList.replace("task", "task-edit");
+      
+      const form = document.createElement("form");
+      form.action = "#";
+      form.method = "POST";
+
+      const nameField = document.createElement("input");
+      nameField.type = "text";
+      nameField.name = "name";
+      nameField.id = "name";
+      nameField.placeholder = "Enter task name";
+      nameField.value = item.name;
+      nameField.required = "required";
+      form.appendChild(nameField);
+
+      const labelWrapper = document.createElement("div");
+      labelWrapper.classList.add("label-wrapper");
+      labelWrapper.innerHTML = `<label for="tomatoes-done">Done</label> / <label for="tomatoes-to-do">To do</label>`;
+      form.appendChild(labelWrapper);
+
+      const tomatoesWrapper = document.createElement("div");
+      tomatoesWrapper.classList.add("tomatoes-wrapper");
+
+      const tomatoesDoneWrapper = document.createElement("div");
+      tomatoesDoneWrapper.classList.add("tomatoes-done-wrapper");
+
+      const tomatoesDoneField = document.createElement("input");
+      tomatoesDoneField.type = "tel";
+      tomatoesDoneField.name = "tomatoes-done";
+      tomatoesDoneField.id = "tomatoes-done";
+      tomatoesDoneField.value = item.tomatoesDone.toString();
+      tomatoesDoneField.addEventListener("beforeinput", (e) => {
+        let selectionStart = tomatoesDoneField.selectionStart;
+        let selectionEnd = tomatoesDoneField.selectionEnd;
+        let selection = tomatoesDoneField.value.substring(selectionStart, selectionEnd);
+        let numberSelected = selection !== "";
+        let inserted;
+        let value = Number.parseInt(tomatoesDoneField.value);
+        if (typeof Number.parseInt(e.data) === "number") {
+          inserted = Number.parseInt(e.data);
+        }
+        if (
+          e.data !== null && !(inserted >= 0 && inserted < 10)
+          || (
+            inserted >= 0 
+            && inserted < 10 
+            && value >= 10
+            && !numberSelected
+          )
+        ) {
+          e.preventDefault();
+        } else if (
+            inserted >= 0 
+            && inserted < 10 
+            && value === 0
+            && !numberSelected
+        ) {
+          e.preventDefault();
+          tomatoesDoneField.value = e.data;
+        }
+      });
+      tomatoesDoneField.addEventListener("blur", () => {
+        if (tomatoesDoneField.value === "") tomatoesDoneField.value = "0";
+      });
+      tomatoesDoneWrapper.appendChild(tomatoesDoneField);
+
+      const tomatoesDoneUp = document.createElement("button");
+      tomatoesDoneUp.type = "button";
+      tomatoesDoneUp.classList.add("up");
+      tomatoesDoneUp.innerHTML = `<img src=${up} alt="Up" width="15px" height="15px">`;
+      tomatoesDoneUp.addEventListener("mousedown", (e) => {
+        if (e.button === 0) {
+          let timeout;
+          let interval;
+          if (Number.parseInt(tomatoesDoneField.value) < 99) {
+            tomatoesDoneField.value = `${Number.parseInt(tomatoesDoneField.value) + 1}`;
+            timeout = setTimeout(() => {
+              interval = setInterval(() => {
+                if (Number.parseInt(tomatoesDoneField.value) < 99) {
+                  tomatoesDoneField.value = `${Number.parseInt(tomatoesDoneField.value) + 1}`;
+                } else {
+                  clearInterval(interval);
+                }
+              }, 150);
+              tomatoesDoneUp.addEventListener("mouseout", () => {
+                clearInterval(interval);
+              });
+              tomatoesDoneUp.addEventListener("mouseup", () => {
+                clearInterval(interval);
+              });
+            }, 1000);
+            tomatoesDoneUp.addEventListener("mouseout", () => {
+              clearTimeout(timeout);
+            });
+            tomatoesDoneUp.addEventListener("mouseup", () => {
+              clearTimeout(timeout);
+            });
+          }
+        }
+      });
+      tomatoesDoneWrapper.appendChild(tomatoesDoneUp);
+
+      const tomatoesDoneDown = document.createElement("button");
+      tomatoesDoneDown.type = "button";
+      tomatoesDoneDown.classList.add("down");
+      tomatoesDoneDown.innerHTML = `<img src=${down} alt="Down" width="15px" height="15px">`;
+      tomatoesDoneDown.addEventListener("mousedown", (e) => {
+        if (e.button === 0) {
+          let timeout;
+          let interval;
+          if (Number.parseInt(tomatoesDoneField.value) > 0) {
+            tomatoesDoneField.value = `${Number.parseInt(tomatoesDoneField.value) - 1}`;
+            timeout = setTimeout(() => {
+              interval = setInterval(() => {
+                if (Number.parseInt(tomatoesDoneField.value) > 0) {
+                  tomatoesDoneField.value = `${Number.parseInt(tomatoesDoneField.value) - 1}`;
+                } else {
+                  clearInterval(interval);
+                }
+              }, 150);
+              tomatoesDoneDown.addEventListener("mouseout", () => {
+                clearInterval(interval);
+              });
+              tomatoesDoneDown.addEventListener("mouseup", () => {
+                clearInterval(interval);
+              });
+            }, 1000);
+            tomatoesDoneDown.addEventListener("mouseout", () => {
+              clearTimeout(timeout);
+            });
+            tomatoesDoneDown.addEventListener("mouseup", () => {
+              clearTimeout(timeout);
+            });
+          }
+        }
+      });
+      tomatoesDoneWrapper.appendChild(tomatoesDoneDown);
+
+      tomatoesWrapper.appendChild(tomatoesDoneWrapper);
+
+      const tomatoesToDoWrapper = document.createElement("div");
+      tomatoesToDoWrapper.classList.add("tomatoes-to-do-wrapper");
+
+      const tomatoesToDoField = document.createElement("input");
+      tomatoesToDoField.type = "tel";
+      tomatoesToDoField.name = "tomatoes-to-do";
+      tomatoesToDoField.id = "tomatoes-to-do";
+      tomatoesToDoField.value = item.tomatoesToDo.toString();
+      tomatoesToDoField.addEventListener("beforeinput", (e) => {
+        let selectionStart = tomatoesToDoField.selectionStart;
+        let selectionEnd = tomatoesToDoField.selectionEnd;
+        let selection = tomatoesToDoField.value.substring(selectionStart, selectionEnd);
+        let numberSelected = selection !== "";
+        let inserted;
+        let value = Number.parseInt(tomatoesToDoField.value);
+        if (typeof Number.parseInt(e.data) === "number") {
+          inserted = Number.parseInt(e.data);
+        }
+        if (
+          e.data !== null && !(inserted >= 0 && inserted < 10)
+          || (
+            inserted >= 0 
+            && inserted < 10 
+            && value >= 10
+            && !numberSelected
+          )
+        ) {
+          e.preventDefault();
+        } else if (
+            inserted >= 0 
+            && inserted < 10 
+            && value === 0
+            && !numberSelected
+        ) {
+          e.preventDefault();
+          tomatoesToDoField.value = e.data;
+        }
+      });
+      tomatoesToDoField.addEventListener("blur", () => {
+        if (tomatoesToDoField.value === "") tomatoesToDoField.value = "0";
+      });
+      tomatoesToDoWrapper.appendChild(tomatoesToDoField);
+
+      const tomatoesToDoUp = document.createElement("button");
+      tomatoesToDoUp.type = "button";
+      tomatoesToDoUp.classList.add("up");
+      tomatoesToDoUp.innerHTML = `<img src=${up} alt="Up" width="15px" height="15px">`;
+      tomatoesToDoUp.addEventListener("mousedown", (e) => {
+        if (e.button === 0) {
+          let timeout;
+          let interval;
+          if (Number.parseInt(tomatoesToDoField.value) < 99) {
+            tomatoesToDoField.value = `${Number.parseInt(tomatoesToDoField.value) + 1}`;
+            timeout = setTimeout(() => {
+              interval = setInterval(() => {
+                if (Number.parseInt(tomatoesToDoField.value) < 99) {
+                  tomatoesToDoField.value = `${Number.parseInt(tomatoesToDoField.value) + 1}`;
+                } else {
+                  clearInterval(interval);
+                }
+              }, 150);
+              tomatoesToDoUp.addEventListener("mouseout", () => {
+                clearInterval(interval);
+              });
+              tomatoesToDoUp.addEventListener("mouseup", () => {
+                clearInterval(interval);
+              });
+            }, 1000);
+            tomatoesToDoUp.addEventListener("mouseout", () => {
+              clearTimeout(timeout);
+            });
+            tomatoesToDoUp.addEventListener("mouseup", () => {
+              clearTimeout(timeout);
+            });
+          }
+        }
+      });
+      tomatoesToDoWrapper.appendChild(tomatoesToDoUp);
+
+      const tomatoesToDoDown = document.createElement("button");
+      tomatoesToDoDown.type = "button";
+      tomatoesToDoDown.classList.add("down");
+      tomatoesToDoDown.innerHTML = `<img src=${down} alt="Down" width="15px" height="15px">`;
+      tomatoesToDoDown.addEventListener("mousedown", (e) => {
+        if (e.button === 0) {
+          let timeout;
+          let interval;
+          if (Number.parseInt(tomatoesToDoField.value) > 0) {
+            tomatoesToDoField.value = `${Number.parseInt(tomatoesToDoField.value) - 1}`;
+            timeout = setTimeout(() => {
+              interval = setInterval(() => {
+                if (Number.parseInt(tomatoesToDoField.value) > 0) {
+                  tomatoesToDoField.value = `${Number.parseInt(tomatoesToDoField.value) - 1}`;
+                } else {
+                  clearInterval(interval);
+                }
+              }, 150);
+              tomatoesToDoDown.addEventListener("mouseout", () => {
+                clearInterval(interval);
+              });
+              tomatoesToDoDown.addEventListener("mouseup", () => {
+                clearInterval(interval);
+              });
+            }, 1000);
+            tomatoesToDoDown.addEventListener("mouseout", () => {
+              clearTimeout(timeout);
+            });
+            tomatoesToDoDown.addEventListener("mouseup", () => {
+              clearTimeout(timeout);
+            });
+          }
+        }
+      });
+      tomatoesToDoWrapper.appendChild(tomatoesToDoDown);
+
+      tomatoesWrapper.appendChild(tomatoesToDoWrapper);
+      form.appendChild(tomatoesWrapper);
+
+      function addNoteEventListener(node) {
+        const nodeCopy = node.cloneNode(true);
+        node.addEventListener("click", () => {
+          addNoteEventListener(nodeCopy);
+          node.remove();
+      
+          const noteWrapper = document.createElement("div");
+          noteWrapper.classList.add("note-wrapper");
+      
+          const deleteNoteBtn = document.createElement("div");
+          deleteNoteBtn.classList.add("delete");
+          deleteNoteBtn.addEventListener("click", () => {
+            noteWrapper.remove();
+            form.insertBefore(nodeCopy, btns);
+          });
+          noteWrapper.appendChild(deleteNoteBtn);
+      
+          const note = document.createElement("div");
+          note.classList.add("note");
+          
+          const noteText = document.createElement("textarea");
+          noteText.name = "note";
+          noteText.placeholder = "Your note ...";
+          note.appendChild(noteText);
+      
+          noteWrapper.appendChild(note);
+          form.insertBefore(noteWrapper, btns);
+        });
+      }
+
+      if (item.note === undefined || item.note === "") {
+        const addNote = document.createElement("button");
+        addNote.type = "button";
+        addNote.classList.add("add-note");
+        addNote.textContent = "Add Note";
+        addNoteEventListener(addNote);
+        form.appendChild(addNote);
+      } else {
+        const addNote = document.createElement("button");
+        addNote.type = "button";
+        addNote.classList.add("add-note");
+        addNote.textContent = "Add Note";
+        addNoteEventListener(addNote);
+
+        const noteWrapper = document.createElement("div");
+        noteWrapper.classList.add("note-wrapper");
+    
+        const deleteNoteBtn = document.createElement("div");
+        deleteNoteBtn.classList.add("delete");
+        deleteNoteBtn.addEventListener("click", () => {
+          noteWrapper.remove();
+          form.insertBefore(addNote, btns);
+        });
+        noteWrapper.appendChild(deleteNoteBtn);
+    
+        const note = document.createElement("div");
+        note.classList.add("note");
+        
+        const noteText = document.createElement("textarea");
+        noteText.name = "note";
+        noteText.placeholder = "Your note ...";
+        noteText.innerText = item.note;
+        note.appendChild(noteText);
+    
+        noteWrapper.appendChild(note);
+        form.appendChild(noteWrapper)
+      }
+
+      const btns = document.createElement("div");
+      btns.classList.add("form-submit-wrapper");
+
+      const deleteTask = document.createElement("button");
+      deleteTask.type = "button";
+      deleteTask.classList.add("delete-task");
+      deleteTask.textContent = "Delete";
+      deleteTask.addEventListener("click", (e) => {
+        if (e.button = 0) {
+          taskList.removeTask(item.name, taskList.getTaskPosition(item.fullName));
+          task.remove();
+        }
+      });
+      btns.appendChild(deleteTask);
+
+      const cancel = document.createElement("button");
+      cancel.type = "button";
+      cancel.classList.add("cancel");
+      cancel.textContent = "Cancel";
+      cancel.addEventListener("click", () => {
+        if (list.children.length > 1) {
+          let index = Array.from(list.children).indexOf(task);
+          if (index < list.children.length - 1) {
+            const nextTask = list.children[index + 1];
+            task.remove();
+            renderItem(fullName);
+            const newTask = list.lastElementChild;
+            list.insertBefore(newTask, nextTask);
+          } else {
+            task.remove();
+            renderItem(fullName);
+          }
+        } else {
+          task.remove();
+          renderItem(fullName);
+        }
+      });
+      btns.appendChild(cancel);
+    
+      const save = document.createElement("button");
+      save.type = "submit";
+      save.classList.add("save");
+      save.textContent = "Save";
+      btns.appendChild(save);
+      form.appendChild(btns);
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+
+        const name = formData.get("name");
+        const isItNewName = name !== item.name;
+        if (isItNewName) {
+          taskList.changeNameOf(item.name, name, taskList.getTaskPosition(fullName));
+          fullName = item.fullName;
+        }
+
+        const tomatoesDone = Number.parseInt(formData.get("tomatoes-done"));
+        const didTomatoesDoneChange = tomatoesDone !== item.tomatoesDone;
+        if (didTomatoesDoneChange) {
+          taskList.changeTomatoesDone(name, tomatoesDone, getTaskPosition(fullName));
+        }
+
+        const tomatoesToDo = Number.parseInt(formData.get("tomatoes-to-do"));
+        const didTomatoesToDoChange = tomatoesToDo !== item.tomatoesToDo;
+        if (didTomatoesToDoChange) {
+          taskList.changeTomatoesToDo(name, tomatoesDone, getTaskPosition(fullName));
+        }
+
+        const isThereNote = formData.get("note") !== null || formData.get("note") === "";
+        if (!isThereNote) {
+          if (item.note !== undefined && item.note !== "") {
+            taskList.removeNoteFrom(name, taskList.getTaskPosition(fullName));
+          }
+        } else {
+          const note = formData.get("note");
+          taskList.addNoteTo(name, note, taskList.getTaskPosition(fullName));
+        }
+
+        if (list.children.length > 1) {
+          let index = Array.from(list.children).indexOf(task);
+          if (index < list.children.length - 1) {
+            const nextTask = list.children[index + 1];
+            task.remove();
+            renderItem(fullName);
+            const newTask = list.lastElementChild;
+            list.insertBefore(newTask, nextTask);
+          } else {
+            task.remove();
+            renderItem(fullName);
+          }
+        } else {
+          task.remove();
+          renderItem(fullName);
+        }
+      });
+      task.appendChild(form);
+    }
+
     const taskName = document.createElement("div");
     taskName.classList.add("name");
     taskName.textContent = item.name;
+    taskName.addEventListener("click", openEditUI);
     header.appendChild(taskName);
 
     const tomatoes = document.createElement("div");
