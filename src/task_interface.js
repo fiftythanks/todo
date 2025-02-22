@@ -1,9 +1,17 @@
 import { taskList } from "./todo.js";
 import up from "./img/up.svg";
 import down from "./img/down.svg";
-import cross from "./img/cross.svg";
 
 const list = document.querySelector("ul.tasks");
+
+const clearBtn = document.querySelector(".clear");
+clearBtn.addEventListener("click", (e) => {
+  if (e.button === 0) {
+    taskList.clear();
+    Array.from(list.children).forEach((child) => child.remove());
+  }
+});
+
 export function renderItem(fullName) {
   if (Object.hasOwn(taskList, fullName)) {
     let item = taskList[fullName];
