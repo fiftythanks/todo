@@ -6,7 +6,7 @@ import cross from "./img/cross.svg";
 const list = document.querySelector("ul.tasks");
 export function renderItem(fullName) {
   if (Object.hasOwn(taskList, fullName)) {
-    const item = taskList[fullName];
+    let item = taskList[fullName];
 
     const task = document.createElement("li");
     task.classList.add("task");
@@ -370,7 +370,7 @@ export function renderItem(fullName) {
       deleteTask.classList.add("delete-task");
       deleteTask.textContent = "Delete";
       deleteTask.addEventListener("click", (e) => {
-        if (e.button = 0) {
+        if (e.button === 0) {
           taskList.removeTask(item.name, taskList.getTaskPosition(item.fullName));
           task.remove();
         }
@@ -415,20 +415,21 @@ export function renderItem(fullName) {
         const name = formData.get("name");
         const isItNewName = name !== item.name;
         if (isItNewName) {
-          taskList.changeNameOf(item.name, name, taskList.getTaskPosition(fullName));
+          item = taskList.changeNameOf(item.name, name, taskList.getTaskPosition(fullName));
           fullName = item.fullName;
+          console.log(item, item.fullName, fullName);
         }
 
         const tomatoesDone = Number.parseInt(formData.get("tomatoes-done"));
         const didTomatoesDoneChange = tomatoesDone !== item.tomatoesDone;
         if (didTomatoesDoneChange) {
-          taskList.changeTomatoesDone(name, tomatoesDone, getTaskPosition(fullName));
+          taskList.changeTomatoesDone(name, tomatoesDone, taskList.getTaskPosition(fullName));
         }
 
         const tomatoesToDo = Number.parseInt(formData.get("tomatoes-to-do"));
         const didTomatoesToDoChange = tomatoesToDo !== item.tomatoesToDo;
         if (didTomatoesToDoChange) {
-          taskList.changeTomatoesToDo(name, tomatoesDone, getTaskPosition(fullName));
+          taskList.changeTomatoesToDo(name, tomatoesToDo, taskList.getTaskPosition(fullName));
         }
 
         const isThereNote = formData.get("note") !== null || formData.get("note") === "";

@@ -307,23 +307,26 @@ export const taskList = {
 
   changeNameOf(name, newName, position) {
     // +*?^$\.[]{}()|/
-    let nameForTest = name;
-    if (nameForTest.includes("\\")) nameForTest = nameForTest.replaceAll("\\", "\\\\");
-    if (nameForTest.includes("+")) nameForTest = nameForTest.replaceAll("+", "\\+");
-    if (nameForTest.includes("*")) nameForTest = nameForTest.replaceAll("*", "\\*");
-    if (nameForTest.includes("?")) nameForTest = nameForTest.replaceAll("?", "\\?");
-    if (nameForTest.includes("^")) nameForTest = nameForTest.replaceAll("^", "\\^");
-    if (nameForTest.includes("$")) nameForTest = nameForTest.replaceAll("$", "\\$");
-    if (nameForTest.includes(".")) nameForTest = nameForTest.replaceAll(".", "\\.");
-    if (nameForTest.includes("[")) nameForTest = nameForTest.replaceAll("[", "\\[");
-    if (nameForTest.includes("]")) nameForTest = nameForTest.replaceAll("]", "\\]");
-    if (nameForTest.includes("{")) nameForTest = nameForTest.replaceAll("{", "\\{");
-    if (nameForTest.includes("}")) nameForTest = nameForTest.replaceAll("}", "\\}");
-    if (nameForTest.includes("(")) nameForTest = nameForTest.replaceAll("(", "\\(");
-    if (nameForTest.includes(")")) nameForTest = nameForTest.replaceAll(")", "\\)");
-    if (nameForTest.includes("|")) nameForTest = nameForTest.replaceAll("|", "\\|");
-    if (nameForTest.includes("/")) nameForTest = nameForTest.replaceAll("/", "\\/");
-
+    function returnAppropriate(name) {
+      let nameForTest = name;
+      if (nameForTest.includes("\\")) nameForTest = nameForTest.replaceAll("\\", "\\\\");
+      if (nameForTest.includes("+")) nameForTest = nameForTest.replaceAll("+", "\\+");
+      if (nameForTest.includes("*")) nameForTest = nameForTest.replaceAll("*", "\\*");
+      if (nameForTest.includes("?")) nameForTest = nameForTest.replaceAll("?", "\\?");
+      if (nameForTest.includes("^")) nameForTest = nameForTest.replaceAll("^", "\\^");
+      if (nameForTest.includes("$")) nameForTest = nameForTest.replaceAll("$", "\\$");
+      if (nameForTest.includes(".")) nameForTest = nameForTest.replaceAll(".", "\\.");
+      if (nameForTest.includes("[")) nameForTest = nameForTest.replaceAll("[", "\\[");
+      if (nameForTest.includes("]")) nameForTest = nameForTest.replaceAll("]", "\\]");
+      if (nameForTest.includes("{")) nameForTest = nameForTest.replaceAll("{", "\\{");
+      if (nameForTest.includes("}")) nameForTest = nameForTest.replaceAll("}", "\\}");
+      if (nameForTest.includes("(")) nameForTest = nameForTest.replaceAll("(", "\\(");
+      if (nameForTest.includes(")")) nameForTest = nameForTest.replaceAll(")", "\\)");
+      if (nameForTest.includes("|")) nameForTest = nameForTest.replaceAll("|", "\\|");
+      if (nameForTest.includes("/")) nameForTest = nameForTest.replaceAll("/", "\\/");
+      return nameForTest;
+    }
+    let nameForTest = returnAppropriate(name);
     
     let test = new RegExp(`^${nameForTest}K3AVskU2o28b2MW`);
     let filteredTasks = this.taskList.filter((key) => {
@@ -363,7 +366,8 @@ export const taskList = {
         }
         let fullName = filteredTasks[position];
         this.createTask(newName, this[fullName].tomatoesToDo);
-        let newTest = new RegExp(`^${newName}K3AVskU2o28b2MW`);
+        let newNameForTest = returnAppropriate(newName);
+        let newTest = new RegExp(`^${newNameForTest}K3AVskU2o28b2MW`);
         let newFilteredTasks = this.taskList.filter((key) => {
           if (key.match(newTest)) return true;
           return false;
@@ -383,7 +387,8 @@ export const taskList = {
           timer.currentTask = this[newFullName];
           localStorage.setItem("currentTask", newFullName);
         }
-        this.removeTask(name);
+        this.removeTask(name, position);
+        return this[newFullName];
       } else {
         console.error("Provide a string as a new name for the task.");
       }
