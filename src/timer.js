@@ -178,9 +178,12 @@ export const timer = {
   seconds: 0,
 
   start() {
-    this.paused = false;
-    localStorage.paused = "false";
-    this.timer = setInterval(() => this.update(), 1000);
+    if (this.paused === true) {
+      this.paused = false;
+      localStorage.paused = "false";
+      this.timer = setInterval(() => this.update(), 1000);
+      document.querySelector(".timer").querySelector(".start").querySelector("button").textContent = "Pause";
+    }
   },
 
   update() {
@@ -201,11 +204,12 @@ export const timer = {
     }
   },
 
-  pause() {
+    pause() {
     if (this.paused === false) {
       clearInterval(this.timer);
       this.paused = true;
       localStorage.paused = true;
+      document.querySelector(".timer").querySelector(".start").querySelector("button").textContent = "Start"; 
     }
   },
 
@@ -219,44 +223,46 @@ export const timer = {
   },
 
   finishInterval() {
+    let wasInitiallyPaused = true;
     if (!this.paused) {
       this.pause();
-      if (this.current === "tomato") {
-        this.tomatoesTotal++;   
-        localStorage.tomatoesTotal = this.tomatoesTotal;
-        this.tomatoesInCycle++;
-        localStorage.tomatoesInCycle = this.tomatoesInCycle;
-        if (this.tomatoesInCycle === this.longInterval) {
-          this.tomatoesInCycle = 0;
-          localStorage.tomatoesInCycle = 0;
-          this.current = "long";
-        } else {
-          this.current = "short";
-        }
-        if (this.currentTask) {
-          let position = taskList.getTaskPosition(this.currentTask.fullName);
-          taskList.changeTomatoesDone(this.currentTask.name, this.currentTask.tomatoesDone + 1, position);
+      wasInitiallyPaused = false;
+    }
+    if (this.current === "tomato") {
+      this.tomatoesTotal++;   
+      localStorage.tomatoesTotal = this.tomatoesTotal;
+      this.tomatoesInCycle++;
+      localStorage.tomatoesInCycle = this.tomatoesInCycle;
+      if (this.tomatoesInCycle === this.longInterval) {
+        this.tomatoesInCycle = 0;
+        localStorage.tomatoesInCycle = 0;
+        this.current = "long";
+      } else {
+        this.current = "short";
+      }
+      if (this.currentTask) {
+        let position = taskList.getTaskPosition(this.currentTask.fullName);
+        taskList.changeTomatoesDone(this.currentTask.name, this.currentTask.tomatoesDone + 1, position);
+        if (
+          this.currentTask.tomatoesDone === this.currentTask.tomatoesToDo
+          && this.autoCheckTasks === true
+        ) {
+          taskList.checkTask(this.currentTask.name, position);
           if (
-            this.currentTask.tomatoesDone === this.currentTask.tomatoesToDo
-            && this.autoCheckTasks === true
+            this.autoSwitchTasks === true
+            && taskList.taskList.indexOf(this.currentTask.fullName) < taskList.taskList.length - 1
           ) {
-            taskList.checkTask(this.currentTask.name, position);
-            if (
-              this.autoSwitchTasks === true
-              && taskList.taskList.indexOf(this.currentTask.fullName) < taskList.taskList.length - 1
-            ) {
-              let nextTaskFullName = taskList.taskList[taskList.taskList.indexOf(this.currentTask.fullName) + 1];
-              let nextTask = taskList[nextTaskFullName].name; 
-              let nextPosition = taskList.getTaskPosition(nextTaskFullName);
-              this.switchTask(nextTask, nextPosition);
-            }
+            let nextTaskFullName = taskList.taskList[taskList.taskList.indexOf(this.currentTask.fullName) + 1];
+            let nextTask = taskList[nextTaskFullName].name; 
+            let nextPosition = taskList.getTaskPosition(nextTaskFullName);
+            this.switchTask(nextTask, nextPosition);
           }
         }
-        if (this.autoStartBreaks === true) this.start();
-      } else if (this.current === "short" || this.current === "long") {
-        this.current = "tomato"; 
-        if (this.autoStartTomatoes === true) this.start();
       }
+      if (this.autoStartBreaks === true && !wasInitiallyPaused) this.start();
+    } else if (this.current === "short" || this.current === "long") {
+      this.current = "tomato"; 
+      if (this.autoStartTomatoes === true && !wasInitiallyPaused) this.start();
     }
   },
 
