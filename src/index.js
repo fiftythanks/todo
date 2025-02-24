@@ -4,6 +4,7 @@ import { settings } from "./settings.js";
 import { timer, initializeTimer } from "./timer.js";
 import { taskList, initializeTaskList } from "./todo.js";
 import { initializeUIList } from "./task_interface.js";
+import "./timer_interface.js";
 
 function initializeApp() {
   initializeTaskList();

@@ -89,7 +89,7 @@ header {
     border-radius: 2px;
   }
   /* this will be set with JS when User presses a btn */
-  .tomato { 
+  .active { 
     background-color: rgb(255 255 255 / 0.2);
   }
   

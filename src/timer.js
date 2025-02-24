@@ -20,6 +20,37 @@ function setTimer(m, s) {
     clockSec.textContent = s;
   }
 }
+function changeCurrentInterval(name) {
+  const btns = document.querySelector(".controls");
+  const short = btns.querySelector(".short");
+  const long = btns.querySelector(".long");
+  const tomato = btns.querySelector(".tomato");
+  switch (name) {
+    case "short":
+      if (!Array.from(short.classList).includes("active")) {
+        short.classList.add("active");
+        long.classList.remove("active");
+        tomato.classList.remove("active");
+      }
+      break;
+    case "long":
+      if (!Array.from(long.classList).includes("active")) {
+        short.classList.remove("active");
+        long.classList.add("active");
+        tomato.classList.remove("active");
+      }
+      break;
+    case "tomato":
+      if (!Array.from(tomato.classList).includes("active")) {
+        short.classList.remove("active");
+        long.classList.remove("active");
+        tomato.classList.add("active");
+      }
+      break;
+    default:
+      return new Error("Incorrect interval");
+  }
+}
 
 export const timer = {
   tomatoDur: 45,
@@ -109,6 +140,7 @@ export const timer = {
         this.duration = this.tomatoDuration;
         localStorage.duration = this.duration;
         this.curr = "tomato";
+        changeCurrentInterval("tomato");
         localStorage.current = "tomato";
         this.reset();
         setTimer(this.minutes, this.seconds);
@@ -117,6 +149,7 @@ export const timer = {
         this.pause();
         this.duration = this.shortDuration;
         this.curr = "short";
+        changeCurrentInterval("short");
         localStorage.current = "short";
         this.reset();
         setTimer(this.minutes, this.seconds);
@@ -125,6 +158,7 @@ export const timer = {
         this.pause();
         this.duration = this.longDuration;
         this.curr = "long";
+        changeCurrentInterval("long");
         localStorage.current = "long";
         this.reset();
         setTimer(this.minutes, this.seconds);
@@ -155,15 +189,13 @@ export const timer = {
     } else if (!this.paused) {
       if (this.seconds > 0) {
         this.seconds--;
-        localStorage.seconds = this.seconds.toString();
-        console.log(`${this.minutes}:${this.seconds}`);  
+        localStorage.seconds = this.seconds.toString(); 
         setTimer(undefined, this.seconds); 
       } else if (this.seconds === 0) {
         this.minutes--;
         localStorage.minutes = this.minutes;
         this.seconds = 59;    
         localStorage.seconds = this.seconds;
-        console.log(`${this.minutes}:${this.seconds}`);
         setTimer(this.minutes, this.seconds);
       }
     }
@@ -220,15 +252,11 @@ export const timer = {
             }
           }
         }
-        console.log(`It's time for a break. You have ${this.duration} minutes.`); 
         if (this.autoStartBreaks === true) this.start();
       } else if (this.current === "short" || this.current === "long") {
-        this.current = "tomato";
-        console.log("Your break is over. Get to work!"); 
+        this.current = "tomato"; 
         if (this.autoStartTomatoes === true) this.start();
       }
-    } else {
-      console.error("Can't use this method when the timer isn't active.");
     }
   },
 
@@ -338,8 +366,10 @@ export function initializeTimer() {
 
   if (!localStorage.current) {
     localStorage.current = timer.current;
+    changeCurrentInterval(timer.current);
   } else {
     timer.curr = localStorage.current;
+    changeCurrentInterval(timer.current);
   }
 
   if (!localStorage.tomatoesTotal) {
