@@ -536,34 +536,9 @@ export const taskList = {
   },
 
   changeTomatoesDone(name, newTomatoesDone, position) {
-    // +*?^$\.[]{}()|/
-    let nameForTest = name;
-    if (nameForTest.includes("\\")) nameForTest = nameForTest.replaceAll("\\", "\\\\");
-    if (nameForTest.includes("+")) nameForTest = nameForTest.replaceAll("+", "\\+");
-    if (nameForTest.includes("*")) nameForTest = nameForTest.replaceAll("*", "\\*");
-    if (nameForTest.includes("?")) nameForTest = nameForTest.replaceAll("?", "\\?");
-    if (nameForTest.includes("^")) nameForTest = nameForTest.replaceAll("^", "\\^");
-    if (nameForTest.includes("$")) nameForTest = nameForTest.replaceAll("$", "\\$");
-    if (nameForTest.includes(".")) nameForTest = nameForTest.replaceAll(".", "\\.");
-    if (nameForTest.includes("[")) nameForTest = nameForTest.replaceAll("[", "\\[");
-    if (nameForTest.includes("]")) nameForTest = nameForTest.replaceAll("]", "\\]");
-    if (nameForTest.includes("{")) nameForTest = nameForTest.replaceAll("{", "\\{");
-    if (nameForTest.includes("}")) nameForTest = nameForTest.replaceAll("}", "\\}");
-    if (nameForTest.includes("(")) nameForTest = nameForTest.replaceAll("(", "\\(");
-    if (nameForTest.includes(")")) nameForTest = nameForTest.replaceAll(")", "\\)");
-    if (nameForTest.includes("|")) nameForTest = nameForTest.replaceAll("|", "\\|");
-    if (nameForTest.includes("/")) nameForTest = nameForTest.replaceAll("/", "\\/");
-
-    
-    let test = new RegExp(`^${nameForTest}K3AVskU2o28b2MW`);
-    let filteredTasks = this.taskList.filter((key) => {
-      if (key.match(test)) return true;
-      return false;
-    });
-    let isThereSuchTask = filteredTasks.length > 0;
-    let areThereDuplicates = filteredTasks.length > 1;
-    if (isThereSuchTask) {
-      if (areThereDuplicates) {
+    if (this.doesTaskExist(name)) {
+      let filteredTasks = this.getFilteredArray(name);
+      if (this.areThereDuplicates(name)) {
         if (position === undefined) {
           let filteredTasksString = "";
           filteredTasks.forEach((fullName, index) => {
@@ -598,6 +573,7 @@ export const taskList = {
       ) {
         this[fullName].tomatoesDone = newTomatoesDone;
         localStorage.setItem(`${fullName}TomatoesDone`, newTomatoesDone.toString());
+        document.querySelector(`#${fullName.replaceAll(" ", "")}`).querySelector("span.done").textContent = newTomatoesDone.toString();
       } else {
         console.error("Provide a valid number of tomatoes. It must be a positive integer.")
       }
@@ -769,6 +745,38 @@ export const taskList = {
       }
     } else {
       return new Error("There's no such task.");
+    }
+  },
+
+  getFilteredArray(name) {
+    if (this.doesTaskExist(name)) {
+      // +*?^$\.[]{}()|/
+      let nameForTest = name;
+      if (nameForTest.includes("\\")) nameForTest = nameForTest.replaceAll("\\", "\\\\");
+      if (nameForTest.includes("+")) nameForTest = nameForTest.replaceAll("+", "\\+");
+      if (nameForTest.includes("*")) nameForTest = nameForTest.replaceAll("*", "\\*");
+      if (nameForTest.includes("?")) nameForTest = nameForTest.replaceAll("?", "\\?");
+      if (nameForTest.includes("^")) nameForTest = nameForTest.replaceAll("^", "\\^");
+      if (nameForTest.includes("$")) nameForTest = nameForTest.replaceAll("$", "\\$");
+      if (nameForTest.includes(".")) nameForTest = nameForTest.replaceAll(".", "\\.");
+      if (nameForTest.includes("[")) nameForTest = nameForTest.replaceAll("[", "\\[");
+      if (nameForTest.includes("]")) nameForTest = nameForTest.replaceAll("]", "\\]");
+      if (nameForTest.includes("{")) nameForTest = nameForTest.replaceAll("{", "\\{");
+      if (nameForTest.includes("}")) nameForTest = nameForTest.replaceAll("}", "\\}");
+      if (nameForTest.includes("(")) nameForTest = nameForTest.replaceAll("(", "\\(");
+      if (nameForTest.includes(")")) nameForTest = nameForTest.replaceAll(")", "\\)");
+      if (nameForTest.includes("|")) nameForTest = nameForTest.replaceAll("|", "\\|");
+      if (nameForTest.includes("/")) nameForTest = nameForTest.replaceAll("/", "\\/");
+      
+      let test = new RegExp(`^${nameForTest}K3AVskU2o28b2MW`);
+      
+      let filteredTasks = this.taskList.filter((fullName) => {
+        if (fullName.match(test)) return true;
+        return false;
+      });
+      return filteredTasks;
+    } else {
+      return new Error("There's no such task");
     }
   }
 }

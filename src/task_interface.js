@@ -491,7 +491,7 @@ export function renderItem(fullName) {
     const tomatoes = document.createElement("div");
     tomatoes.classList.add("tomatoes");
     tomatoes.innerHTML = `[<span class="done">${item.tomatoesDone}</span>/<span class="to-do">${item.tomatoesToDo}</span>]`;
-    // tomatoes.addEventListener("click", openEditUI);
+    tomatoes.addEventListener("click", focusOnTask);
     header.appendChild(tomatoes);
 
     const editTask = document.createElement("button");
@@ -506,7 +506,7 @@ export function renderItem(fullName) {
       const note = document.createElement("p");
       note.classList.add("note");
       note.innerHTML = item.note.replaceAll("\n", "<br>");
-      // note.addEventListener("click", openEditUI);
+      note.addEventListener("click", focusOnTask);
       task.appendChild(note);
     }
 
