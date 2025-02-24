@@ -573,7 +573,10 @@ export const taskList = {
       ) {
         this[fullName].tomatoesDone = newTomatoesDone;
         localStorage.setItem(`${fullName}TomatoesDone`, newTomatoesDone.toString());
-        document.querySelector(`#${fullName.replaceAll(" ", "")}`).querySelector("span.done").textContent = newTomatoesDone.toString();
+        const taskNode = document.querySelector(`#${fullName.replaceAll(" ", "")}`);
+        if (taskNode !== null && !Array.from(taskNode.classList).includes("task-edit")) {
+          taskNode.querySelector("span.done").textContent = newTomatoesDone.toString();
+        }
       } else {
         console.error("Provide a valid number of tomatoes. It must be a positive integer.")
       }
