@@ -475,10 +475,6 @@ export function renderItem(fullName) {
     function focusOnTask(e) {
       if (timer.currentTask !== item && e.button === 0) {
         timer.switchTask(item.name, taskList.getTaskPosition(item.fullName));
-        if (list.querySelector(".current-task") !== null) {
-          list.querySelector(".current-task").classList.toggle("current-task");
-        }
-        task.classList.toggle("current-task");
       }
     }
 

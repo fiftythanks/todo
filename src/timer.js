@@ -245,17 +245,40 @@ export const timer = {
         taskList.changeTomatoesDone(this.currentTask.name, this.currentTask.tomatoesDone + 1, position);
         if (
           this.currentTask.tomatoesDone === this.currentTask.tomatoesToDo
+          && this.currentTask.completed === false
           && this.autoCheckTasks === true
         ) {
           taskList.checkTask(this.currentTask.name, position);
           if (
             this.autoSwitchTasks === true
-            && taskList.taskList.indexOf(this.currentTask.fullName) < taskList.taskList.length - 1
           ) {
-            let nextTaskFullName = taskList.taskList[taskList.taskList.indexOf(this.currentTask.fullName) + 1];
-            let nextTask = taskList[nextTaskFullName].name; 
-            let nextPosition = taskList.getTaskPosition(nextTaskFullName);
-            this.switchTask(nextTask, nextPosition);
+            let unfinishedTasks = taskList.taskList.filter((fullName) => {
+              let task = taskList[fullName];
+              return task.tomatoesDone < task.tomatoesToDo ? true : false;
+            });
+            if (unfinishedTasks.length > 0) {
+              let inFront = unfinishedTasks.filter((fullName) => {
+                let currentIndex = taskList.taskList.indexOf(this.currentTask.fullName);
+                return taskList.taskList.indexOf(fullName) > currentIndex ? true : false;
+              });
+              if (inFront.length > 0) {
+                let nextTaskName = taskList[inFront[0]].name;
+                let nextTaskFullName = inFront[0];
+                let nextPosition = taskList.getTaskPosition(nextTaskFullName);
+                this.switchTask(nextTaskName, nextPosition);
+              } else {
+                let beforeCurrent = unfinishedTasks.filter((fullName) => {
+                  let currentIndex = taskList.taskList.indexOf(this.currentTask.fullName);
+                  return taskList.taskList.indexOf(fullName) < currentIndex ? true : false;
+                });
+                if (beforeCurrent.length > 0) {
+                  let nextTaskName = taskList[beforeCurrent.at(-1)].name;
+                  let nextTaskFullName = beforeCurrent.at(-1);
+                  let nextPosition = taskList.getTaskPosition(nextTaskFullName);
+                  this.switchTask(nextTaskName, nextPosition);
+                }
+              }
+            }
           }
         }
       }
@@ -307,6 +330,12 @@ export const timer = {
       let fullName = taskList.getFullName(name, position);
       this.currentTask = taskList[fullName];
       localStorage.setItem("currentTask", `${fullName}`);
+      let previousCurrentTask = document.querySelector(".current-task");
+      if (previousCurrentTask !== null) {
+        previousCurrentTask.classList.toggle("current-task");
+      }
+      let newCurrentTask = document.querySelector(`#${this.currentTask.fullName.replaceAll(" ", "")}`);
+      newCurrentTask.classList.toggle("current-task");
     } else {
       console.error("There's no such task. Provide a valid task name in the string format.");
     }
