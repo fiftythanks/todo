@@ -1,6 +1,7 @@
 import { taskList } from "./todo.js";
 import up from "./img/up.svg";
 import down from "./img/down.svg";
+import editSrc from "./img/edit.svg";
 
 const list = document.querySelector("ul.tasks");
 
@@ -470,17 +471,23 @@ export function renderItem(fullName) {
       task.appendChild(form);
     }
 
-    const taskName = document.createElement("div");
+    const taskName = document.createElement("h3");
     taskName.classList.add("name");
     taskName.textContent = item.name;
-    taskName.addEventListener("click", openEditUI);
+    // taskName.addEventListener("click", openEditUI);
     header.appendChild(taskName);
 
     const tomatoes = document.createElement("div");
     tomatoes.classList.add("tomatoes");
     tomatoes.innerHTML = `[<span class="done">${item.tomatoesDone}</span>/<span class="to-do">${item.tomatoesToDo}</span>]`;
-    tomatoes.addEventListener("click", openEditUI);
+    // tomatoes.addEventListener("click", openEditUI);
     header.appendChild(tomatoes);
+
+    const editTask = document.createElement("button");
+    editTask.classList.add("edit-task");
+    editTask.innerHTML = `<img alt="Edit task", width="20px", height="20px", src=${editSrc}>`;
+    editTask.addEventListener("click", openEditUI);
+    header.appendChild(editTask);
 
     task.appendChild(header);
 
@@ -488,7 +495,7 @@ export function renderItem(fullName) {
       const note = document.createElement("p");
       note.classList.add("note");
       note.innerHTML = item.note.replaceAll("\n", "<br>");
-      note.addEventListener("click", openEditUI);
+      // note.addEventListener("click", openEditUI);
       task.appendChild(note);
     }
 

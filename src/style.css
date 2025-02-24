@@ -142,9 +142,11 @@ ul {
 .tasks {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .task {
+  width: 100%;
   .main {
     display: flex;
     gap: 1ch;
@@ -154,7 +156,11 @@ ul {
       min-width: 3ch;
     }
     .name {
-      width: 100%;
+      font-size: inherit;
+      font-weight: inherit;
+      overflow-wrap: break-word;
+      width: calc(100% - 13ch - 20px);
+      flex-grow: 1;
       &:hover { cursor: pointer; }
     }
     .tomatoes {
@@ -164,10 +170,16 @@ ul {
         cursor: pointer;
       }
     }
+    .edit-task {
+      height: 1rlh; 
+      position: relative;
+      top: 3px;
+      flex-shrink: 0;
+    }
   }
   .note {
     opacity: 0.5;
-    padding: 0 6ch 0 4ch; 
+    padding: 0 4ch; 
     &:hover {
       cursor: pointer;
     }
