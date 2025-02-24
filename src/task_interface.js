@@ -1,4 +1,5 @@
 import { taskList } from "./todo.js";
+import { timer } from "./timer.js";
 import up from "./img/up.svg";
 import down from "./img/down.svg";
 import editSrc from "./img/edit.svg";
@@ -19,7 +20,7 @@ export function renderItem(fullName) {
 
     const task = document.createElement("li");
     task.classList.add("task");
-    task.id = fullName;
+    task.id = fullName.replaceAll(" ", "");
 
     const header = document.createElement("div");
     header.classList.add("main");
@@ -471,10 +472,20 @@ export function renderItem(fullName) {
       task.appendChild(form);
     }
 
+    function focusOnTask(e) {
+      if (timer.currentTask !== item && e.button === 0) {
+        timer.switchTask(item.name, taskList.getTaskPosition(item.fullName));
+        if (list.querySelector(".current-task") !== null) {
+          list.querySelector(".current-task").classList.toggle("current-task");
+        }
+        task.classList.toggle("current-task");
+      }
+    }
+
     const taskName = document.createElement("h3");
     taskName.classList.add("name");
     taskName.textContent = item.name;
-    // taskName.addEventListener("click", openEditUI);
+    taskName.addEventListener("click", focusOnTask);
     header.appendChild(taskName);
 
     const tomatoes = document.createElement("div");
@@ -732,5 +743,9 @@ btnCreateTask.addEventListener("click", createTask);
 export function initializeUIList() {
   for (let task of taskList.taskList) {
     renderItem(task);
+  }
+
+  if (localStorage.currentTask && Object.hasOwn(taskList, localStorage.currentTask)) {
+    document.querySelector(`#${timer.currentTask.fullName.replaceAll(" ", "")}`).classList.toggle("current-task");
   }
 }

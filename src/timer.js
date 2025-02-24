@@ -297,14 +297,14 @@ export const timer = {
         }
         if (
           Number.parseInt(position) < 0
-          || Number.parseInt(position) >= filteredTasks.length
+          || Number.parseInt(position) >= taskList.areThereDuplicates(name)
         ) {
           return new Error("Wrong number. Try again.");
         }
       } else {
         position = 0;
       }
-      let fullName = filteredTasks[position];
+      let fullName = taskList.getFullName(name, position);
       this.currentTask = taskList[fullName];
       localStorage.setItem("currentTask", `${fullName}`);
     } else {
@@ -414,6 +414,11 @@ export function initializeTimer() {
   }
 
   if (localStorage.currentTask) {
-    timer.currentTask = taskList[localStorage.currentTask];
+    if (Object.hasOwn(taskList, localStorage.currentTask)) {
+      timer.currentTask = taskList[localStorage.currentTask];
+      // document.querySelector(`#${timer.currentTask.fullName.replaceAll(" ", "")}`).classList.toggle("current-task");
+    } else {
+      localStorage.removeItem("currentTask");
+    }
   }
 }

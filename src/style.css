@@ -143,6 +143,7 @@ ul {
   display: flex;
   flex-direction: column;
   width: 100%;
+  gap: 3px;
 }
 
 .task {
@@ -184,6 +185,11 @@ ul {
       cursor: pointer;
     }
   }
+}
+
+.current-task {
+  background-color: rgb(255 255 255 / 0.2);
+  border-radius: 2px;
 }
 
 /* .new-task {
