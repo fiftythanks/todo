@@ -1,10 +1,31 @@
 import { taskList } from "./todo.js";
 
+function setTimer(m, s) {
+  const clock = document.querySelector(".clock");
+  const clockMins = clock.querySelector(".minutes");
+  const clockSec = clock.querySelector(".seconds");
+  function convertTime(number) {
+    if (Number.parseInt(number) < 10) {
+      number = `0${number}`;
+    }
+    return number.toString();
+  }
+  if (m !== undefined) {
+    m = convertTime(m);
+    clockMins.textContent = m;
+  }
+
+  if (s !== undefined) {
+    s = convertTime(s);
+    clockSec.textContent = s;
+  }
+}
+
 export const timer = {
   tomatoDur: 45,
   set tomatoDuration(newTomatoDuration) {
     this.tomatoDur = newTomatoDuration;
-    localStorage.tomatoDuration = newTomatoDuration;
+    localStorage.setItem("tomatoDuration", newTomatoDuration.toString());
     if (this.current === "tomato") {
       let passed = this.duration - this.minutes;
       if (passed < newTomatoDuration || (passed === newTomatoDuration && this.seconds >= 0)) {
@@ -12,8 +33,9 @@ export const timer = {
         localStorage.duration = newTomatoDuration;
         this.minutes = newTomatoDuration - passed;
         localStorage.minutes = this.minutes;
+        setTimer(this.minutes);
       } else {  
-        this.current = "tomato";
+        this.finishInterval();
       }
     }
   },  
@@ -32,8 +54,9 @@ export const timer = {
         localStorage.duration = newShortDuration;
         this.minutes = newShortDuration - passed;
         localStorage.minutes = this.minutes;
+        setTimer(this.minutes);
       } else {
-        this.current = "short";
+        this.finishInterval();
       }
     }
   },
@@ -52,8 +75,9 @@ export const timer = {
         localStorage.duration = newLongDuration;
         this.minutes = newLongDuration - passed;
         localStorage.minutes = this.minutes;
+        setTimer(this.minutes);
       } else {
-        this.current = "long";
+        this.finishInterval();
       }
     }
   },
@@ -87,6 +111,7 @@ export const timer = {
         this.curr = "tomato";
         localStorage.current = "tomato";
         this.reset();
+        setTimer(this.minutes, this.seconds);
         break;
       case "short":
         this.pause();
@@ -94,6 +119,7 @@ export const timer = {
         this.curr = "short";
         localStorage.current = "short";
         this.reset();
+        setTimer(this.minutes, this.seconds);
         break;
       case "long":
         this.pause();
@@ -101,6 +127,7 @@ export const timer = {
         this.curr = "long";
         localStorage.current = "long";
         this.reset();
+        setTimer(this.minutes, this.seconds);
         break;
       default:
         console.error('Type in a correct value ("tomato"/"short"/"long").');
@@ -114,7 +141,8 @@ export const timer = {
   paused: true,
   timer: undefined,
   minutes: 45,
-  seconds: 0, 
+  seconds: 0,
+
   start() {
     this.paused = false;
     localStorage.paused = "false";
@@ -128,14 +156,16 @@ export const timer = {
       if (this.seconds > 0) {
         this.seconds--;
         localStorage.seconds = this.seconds.toString();
-        console.log(`${this.minutes}:${this.seconds}`);   
+        console.log(`${this.minutes}:${this.seconds}`);  
+        setTimer(undefined, this.seconds); 
       } else if (this.seconds === 0) {
         this.minutes--;
         localStorage.minutes = this.minutes;
         this.seconds = 59;    
         localStorage.seconds = this.seconds;
         console.log(`${this.minutes}:${this.seconds}`);
-      } 
+        setTimer(this.minutes, this.seconds);
+      }
     }
   },
 
@@ -153,6 +183,7 @@ export const timer = {
     localStorage.minutes = this.minutes;
     this.seconds = 0;
     localStorage.seconds = 0;
+    setTimer(this.minutes, this.seconds);
   },
 
   finishInterval() {
@@ -171,12 +202,7 @@ export const timer = {
           this.current = "short";
         }
         if (this.currentTask) {
-          let test = new RegExp(`^${this.currentTask.name}K3AVskU2o28b2MW`);
-          let filteredTasks = taskList.taskList.filter((key) => {
-            if (key.match(test)) return true;
-            return false;
-          });
-          let position = filteredTasks.indexOf(this.currentTask.fullName);
+          let position = taskList.getTaskPosition(this.currentTask.fullName);
           taskList.changeTomatoesDone(this.currentTask.name, this.currentTask.tomatoesDone + 1, position);
           if (
             this.currentTask.tomatoesDone === this.currentTask.tomatoesToDo
@@ -189,12 +215,7 @@ export const timer = {
             ) {
               let nextTaskFullName = taskList.taskList[taskList.taskList.indexOf(this.currentTask.fullName) + 1];
               let nextTask = taskList[nextTaskFullName].name; 
-              let test = new RegExp(`^${nextTask}K3AVskU2o28b2MW`);
-              let filteredTasks = taskList.taskList.filter((key) => {
-                if (key.match(test)) return true;
-                return false;
-              });
-              let nextPosition = filteredTasks.indexOf(nextTaskFullName);
+              let nextPosition = taskList.getTaskPosition(nextTaskFullName);
               this.switchTask(nextTask, nextPosition);
             }
           }
@@ -221,15 +242,8 @@ export const timer = {
 
   currentTask: undefined,
   switchTask(name, position) {
-    let test = new RegExp(`^${name}K3AVskU2o28b2MW`);
-    let filteredTasks = taskList.taskList.filter((key) => {
-      if (key.match(test)) return true;
-      return false;
-    });
-    let isThereSuchTask = filteredTasks.length > 0;
-    let areThereDuplicates = filteredTasks.length > 1;
-    if (isThereSuchTask) {
-      if (areThereDuplicates) {
+    if (taskList.doesTaskExist(name)) {
+      if (taskList.areThereDuplicates(name)) {
         if (position === undefined) {
           let filteredTasksString = "";
           filteredTasks.forEach((fullName, index) => {
@@ -342,14 +356,18 @@ export function initializeTimer() {
 
   if (localStorage.minutes === undefined) {
     localStorage.minutes = timer.minutes.toString();
+    setTimer(timer.minutes);
   } else {
     timer.minutes = Number.parseInt(localStorage.minutes);
+    setTimer(timer.minutes);
   }
 
   if (localStorage.seconds === undefined) {
     localStorage.seconds = timer.seconds.toString();
+    setTimer(undefined, timer.seconds);
   } else {
     timer.seconds = Number.parseInt(localStorage.seconds);
+    setTimer(undefined, timer.seconds);
   }
 
   if (localStorage.paused === undefined) {
