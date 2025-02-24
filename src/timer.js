@@ -404,6 +404,7 @@ export function initializeTimer() {
     localStorage.paused = "true";
   } else if (localStorage.paused === "false") {
     timer.start();
+    document.querySelector(".timer").querySelector(".start").querySelector("button").textContent = "Pause";
   }
 
   if (localStorage.currentTask) {
