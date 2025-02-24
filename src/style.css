@@ -40,7 +40,13 @@ h1, h2, h3, h4, h5, h6 {
   isolation: isolate;
 }
 
+
+
 /* My styles */
+html {
+  
+}
+
 body {
   background-color: #000;
   color: #fff;
@@ -49,7 +55,7 @@ body {
   flex-direction: column;
   gap: 10px;
   height: 100dvh;
-  width: max(calc(14ch * 2 + 10px), 100vw);
+  width: max(calc(14ch * 2 + 10px), 100%);
   align-items: center;
   padding: 5px;
   font-size: 1.2rem;

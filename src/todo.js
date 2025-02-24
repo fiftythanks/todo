@@ -636,7 +636,7 @@ export const taskList = {
       if (nameForTest.includes(")")) nameForTest = nameForTest.replaceAll(")", "\\)");
       if (nameForTest.includes("|")) nameForTest = nameForTest.replaceAll("|", "\\|");
       if (nameForTest.includes("/")) nameForTest = nameForTest.replaceAll("/", "\\/");
-      
+                
       let test = new RegExp(`^${nameForTest}K3AVskU2o28b2MW`);
       let filteredTasks = this.taskList.filter((fullName) => {
         if (fullName.match(test)) return true;
