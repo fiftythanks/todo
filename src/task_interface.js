@@ -35,12 +35,6 @@ export function renderItem(fullName) {
     }
     checkBox.addEventListener("click", () => {
       taskList.checkTask(item.name, taskList.getTaskPosition(fullName));
-      checkBox.classList.toggle("checked");
-      if (item.completed === false) {
-        checkBox.textContent = "[ ]";
-      } else {
-        checkBox.textContent = "[x]";
-      }
     });
     header.appendChild(checkBox);
 

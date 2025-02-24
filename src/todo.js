@@ -398,33 +398,10 @@ export const taskList = {
   },
 
   checkTask(name, position) {
-    // +*?^$\.[]{}()|/
-    let nameForTest = name;
-    if (nameForTest.includes("\\")) nameForTest = nameForTest.replaceAll("\\", "\\\\");
-    if (nameForTest.includes("+")) nameForTest = nameForTest.replaceAll("+", "\\+");
-    if (nameForTest.includes("*")) nameForTest = nameForTest.replaceAll("*", "\\*");
-    if (nameForTest.includes("?")) nameForTest = nameForTest.replaceAll("?", "\\?");
-    if (nameForTest.includes("^")) nameForTest = nameForTest.replaceAll("^", "\\^");
-    if (nameForTest.includes("$")) nameForTest = nameForTest.replaceAll("$", "\\$");
-    if (nameForTest.includes(".")) nameForTest = nameForTest.replaceAll(".", "\\.");
-    if (nameForTest.includes("[")) nameForTest = nameForTest.replaceAll("[", "\\[");
-    if (nameForTest.includes("]")) nameForTest = nameForTest.replaceAll("]", "\\]");
-    if (nameForTest.includes("{")) nameForTest = nameForTest.replaceAll("{", "\\{");
-    if (nameForTest.includes("}")) nameForTest = nameForTest.replaceAll("}", "\\}");
-    if (nameForTest.includes("(")) nameForTest = nameForTest.replaceAll("(", "\\(");
-    if (nameForTest.includes(")")) nameForTest = nameForTest.replaceAll(")", "\\)");
-    if (nameForTest.includes("|")) nameForTest = nameForTest.replaceAll("|", "\\|");
-    if (nameForTest.includes("/")) nameForTest = nameForTest.replaceAll("/", "\\/");
-
-    
-    let test = new RegExp(`^${nameForTest}K3AVskU2o28b2MW`);
-    let filteredTasks = this.taskList.filter((key) => {
-      if (key.match(test)) return true;
-      return false;
-    });
-    let isThereSuchTask = filteredTasks.length > 0;
-    let areThereDuplicates = filteredTasks.length > 1;
+    let isThereSuchTask = this.doesTaskExist(name);
     if (isThereSuchTask) {
+      let filteredTasks = this.getFilteredArray(name);
+      let areThereDuplicates = this.areThereDuplicates(name);
       if (areThereDuplicates) {
         if (position === undefined) {
           let filteredTasksString = "";
@@ -456,9 +433,15 @@ export const taskList = {
       if (this[fullName].completed === false) {
         this[fullName].completed = true;
         localStorage[`${fullName}Completed`] = "true";
+        const checkBox = document.querySelector(`#${fullName.replaceAll(" ", "")}`).querySelector("button.check");
+        checkBox.classList.toggle("checked");
+        checkBox.textContent = "[x]";
       } else {
         this[fullName].completed = false;
         localStorage[`${fullName}Completed`] = "false";
+        const checkBox = document.querySelector(`#${fullName.replaceAll(" ", "")}`).querySelector("button.check");
+        checkBox.classList.toggle("checked");
+        checkBox.textContent = "[ ]";
       }
     } else {
       console.error("There's no such task. The first parameter has to be the name of the task.");
