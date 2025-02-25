@@ -5,11 +5,14 @@ import { timer, initializeTimer } from "./timer.js";
 import { taskList, initializeTaskList } from "./todo.js";
 import { initializeUIList } from "./task_interface.js";
 import "./timer_interface.js";
+import { renderProgressBar } from "./progress.js";
+import "./settings_interface.js";
 
 function initializeApp() {
   initializeTaskList();
   initializeTimer();
   initializeUIList();
+  renderProgressBar();
 }
 initializeApp();
 window.timer = timer;

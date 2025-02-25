@@ -1,4 +1,5 @@
 import { taskList } from "./todo.js";
+import { renderProgressBar } from "./progress.js";
 
 function setTimer(m, s) {
   const clock = document.querySelector(".clock");
@@ -202,6 +203,7 @@ export const timer = {
         setTimer(this.minutes, this.seconds);
       }
     }
+    renderProgressBar();
   },
 
     pause() {
@@ -267,13 +269,13 @@ export const timer = {
                 let nextPosition = taskList.getTaskPosition(nextTaskFullName);
                 this.switchTask(nextTaskName, nextPosition);
               } else {
+                let currentIndex = taskList.taskList.indexOf(this.currentTask.fullName);
                 let beforeCurrent = unfinishedTasks.filter((fullName) => {
-                  let currentIndex = taskList.taskList.indexOf(this.currentTask.fullName);
                   return taskList.taskList.indexOf(fullName) < currentIndex ? true : false;
                 });
                 if (beforeCurrent.length > 0) {
-                  let nextTaskName = taskList[beforeCurrent.at(-1)].name;
                   let nextTaskFullName = beforeCurrent.at(-1);
+                  let nextTaskName = taskList[nextTaskFullName].name;
                   let nextPosition = taskList.getTaskPosition(nextTaskFullName);
                   this.switchTask(nextTaskName, nextPosition);
                 }
